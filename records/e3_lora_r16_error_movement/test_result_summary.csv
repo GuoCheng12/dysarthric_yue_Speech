@@ -1,0 +1,5 @@
+group,sample_count,zero_shot_cer,E2_fullSFT_clean_pooled_epoch2_cer,E3_LoRA_r16_best_dev_checkpoint_483_cer,delta_E3_LoRA_r16_best_dev_checkpoint_483_minus_E2_fullSFT_clean_pooled_epoch2_cer,zero_shot_critical_rate,E2_fullSFT_clean_pooled_epoch2_critical_rate,E3_LoRA_r16_best_dev_checkpoint_483_critical_rate,delta_E3_LoRA_r16_best_dev_checkpoint_483_minus_E2_fullSFT_clean_pooled_epoch2_critical_rate,zero_shot_critical_count,E2_fullSFT_clean_pooled_epoch2_critical_count,E3_LoRA_r16_best_dev_checkpoint_483_critical_count
+overall,258,0.277309,0.139254,0.042415,-0.096840,0.205426,0.089147,0.027132,-0.062016,53,23,7
+zero_shot_bucket=easy,135,0.060905,0.022489,0.006127,-0.016362,0.000000,0.000000,0.007407,0.007407,0,0,1
+zero_shot_bucket=medium,70,0.304910,0.116754,0.025169,-0.091585,0.000000,0.042857,0.000000,-0.042857,0,3,0
+zero_shot_bucket=hard,53,0.792076,0.466393,0.157622,-0.308772,1.000000,0.377358,0.113208,-0.264151,53,20,6

@@ -1,0 +1,5 @@
+movement_category,definition,meaning,sample_count,sample_percent,avg_zero_shot_cer,avg_e3_lora_r16_cer,avg_delta_cer_e3_lora_r16_minus_zero,zero_shot_critical_count,e3_lora_r16_critical_count
+Rescued,"zero-shot critical=1, E3 critical=0",hard samples recovered by LoRA adaptation,47,0.182171,0.767595,0.054655,-0.712939,47,0
+Still hard,"zero-shot critical=1, E3 critical=1",remaining core difficult samples after LoRA adaptation,6,0.023256,0.983846,0.964193,-0.019653,6,6
+Regression,"zero-shot critical=0, E3 critical=1",new critical errors introduced by LoRA adaptation,1,0.003876,0.142857,0.571429,0.428572,0,1
+Stable easy,"zero-shot critical=0, E3 critical=0",samples that stayed non-critical before and after LoRA adaptation,204,0.790698,0.144230,0.009890,-0.134340,0,0

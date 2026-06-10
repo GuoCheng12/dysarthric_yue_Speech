@@ -1,0 +1,5 @@
+movement_category,E2_fullSFT_clean_pooled_epoch2_count,E3_LoRA_r16_best_dev_count,delta_E3_minus_E2_count
+Rescued,33,47,14
+Still hard,20,6,-14
+Regression,3,1,-2
+Stable easy,202,204,2
