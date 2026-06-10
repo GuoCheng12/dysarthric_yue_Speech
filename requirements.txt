@@ -1,0 +1,9 @@
+torch
+transformers
+datasets
+accelerate
+librosa
+soundfile
+qwen-asr
+opencc-python-reimplemented
+pandas

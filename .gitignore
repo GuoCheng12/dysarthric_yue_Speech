@@ -1,0 +1,57 @@
+# Python/runtime
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+venvs/
+
+# Large or sensitive ASR artifacts
+datasets/
+data/
+models/
+checkpoints/
+checkpoint-*/
+cache/
+logs/
+tmp/
+outputs/
+inference/outputs/
+finetune/data/
+finetune/logs/
+finetune/e2-pooled-sft*/
+finetune/baselines/*/dev_predictions.csv
+finetune/baselines/*/test_predictions.csv
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.wav
+*.flac
+*.mp3
+*.m4a
+*.zip
+*.tar
+*.tar.gz
+*.jsonl
+
+# Secrets / local machine config
+auth.json
+auth.toml
+config.toml
+config.yaml
+.env
+env.sh
+env-no-proxy.sh
+run-mihomo.pid
+codex/
+etc/
+
+# macOS/editor
+.DS_Store
+~$*
+.vscode/
+.idea/

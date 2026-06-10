@@ -1,0 +1,28 @@
+{
+  "baseline_name": "E2_fullSFT_clean_pooled_epoch2",
+  "training_type": "full_parameter_sft",
+  "peft_method": "none",
+  "source_run": "finetune/e2-pooled-sft-3epoch",
+  "source_checkpoint": "checkpoint-138",
+  "epoch": 2,
+  "train_split": "outputs/experiment2/clean_read_sentence_train.csv",
+  "dev_split": "outputs/experiment2/clean_read_sentence_dev.csv",
+  "test_split": "outputs/experiment2/clean_read_sentence_test.csv",
+  "remote_checkpoint": "/data/qwen3-asr/finetune/e2-pooled-sft-3epoch/checkpoint-138",
+  "remote_checkpoint_alias": "/data/qwen3-asr/finetune/baselines/E2_fullSFT_clean_pooled_epoch2/checkpoint",
+  "dev_summary": "finetune/baselines/E2_fullSFT_clean_pooled_epoch2/dev_summary_by_group.csv",
+  "test_summary": "finetune/baselines/E2_fullSFT_clean_pooled_epoch2/test_summary_by_group.csv",
+  "test_overall": {
+    "sample_count": 258,
+    "zero_shot_cer": 0.277309,
+    "baseline_cer": 0.139254,
+    "delta_cer": -0.138055,
+    "zero_shot_critical_rate": 0.205426,
+    "baseline_critical_rate": 0.089147
+  },
+  "future_required_methods": [
+    "zero_shot",
+    "E2_fullSFT_clean_pooled_epoch2",
+    "new_method"
+  ]
+}
