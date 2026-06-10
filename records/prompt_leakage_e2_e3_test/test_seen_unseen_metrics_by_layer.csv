@@ -1,0 +1,9 @@
+leakage_layer,test_subset,sample_count,zero_shot_cer,zero_shot_critical_rate,zero_shot_critical_count,E2_fullSFT_clean_pooled_epoch2_cer,E2_fullSFT_clean_pooled_epoch2_critical_rate,E2_fullSFT_clean_pooled_epoch2_critical_count,E3_LoRA_r16_best_dev_checkpoint_483_cer,E3_LoRA_r16_best_dev_checkpoint_483_critical_rate,E3_LoRA_r16_best_dev_checkpoint_483_critical_count
+raw,seen-prompt test,251,0.266110,0.187251,47,0.126173,0.071713,18,0.033577,0.019920,5
+raw,unseen-prompt test,7,0.678906,0.857143,6,0.608328,0.714286,5,0.359307,0.285714,2
+normalized,seen-prompt test,251,0.266110,0.187251,47,0.126173,0.071713,18,0.033577,0.019920,5
+normalized,unseen-prompt test,7,0.678906,0.857143,6,0.608328,0.714286,5,0.359307,0.285714,2
+jyutping,seen-prompt test,251,0.266110,0.187251,47,0.126173,0.071713,18,0.033577,0.019920,5
+jyutping,unseen-prompt test,7,0.678906,0.857143,6,0.608328,0.714286,5,0.359307,0.285714,2
+any_layer,seen-prompt test,251,0.266110,0.187251,47,0.126173,0.071713,18,0.033577,0.019920,5
+any_layer,unseen-prompt test,7,0.678906,0.857143,6,0.608328,0.714286,5,0.359307,0.285714,2

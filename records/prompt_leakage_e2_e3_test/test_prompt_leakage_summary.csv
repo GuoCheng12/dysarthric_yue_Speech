@@ -1,0 +1,5 @@
+leakage_layer,seen_prompt_test_count,unseen_prompt_test_count,seen_prompt_test_rate
+raw,251,7,0.972868
+normalized,251,7,0.972868
+jyutping,251,7,0.972868
+any_layer,251,7,0.972868

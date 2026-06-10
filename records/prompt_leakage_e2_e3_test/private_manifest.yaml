@@ -1,0 +1,18 @@
+name: prompt_leakage_e2_e3_test_private_matches
+artifact_type: private_prompt_leakage_match_table
+payload_in_git: false
+privacy_level: private_patient_text_private_prompt_identity
+split: test
+train_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_train.csv
+test_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_test.csv
+comparison_table: /data/qwen3-asr/finetune/e3-lora-r16-10epoch/eval_test_three_way_checkpoint_483/three_way_per_utterance.csv
+private_path: /data/qwen3-asr/finetune/prompt_leakage/e2_e3_test/test_prompt_leakage_private_matches.csv
+sha256: 1b4d1f006def3bfd73dc2d4c41abd6c23c52b16b992eedc61353fe29f0188528
+sample_count: 258
+contains:
+  - raw_gt
+  - clean_gt
+  - normalized_text
+  - jyutping_sequence
+  - matched_train_utt_ids
+public_record: records/prompt_leakage_e2_e3_test

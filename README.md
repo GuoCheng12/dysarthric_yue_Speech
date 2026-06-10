@@ -110,3 +110,4 @@ See `examples/dataset_layout.md` for the expected private filesystem layout.
   - `Still hard`: critical before and after epoch2.
   - `Regression`: non-critical in zero-shot, critical after epoch2.
   - `Stable easy`: non-critical in both.
+- `records/prompt_leakage_e2_e3_test/`: train/test prompt leakage check at raw text, normalized text, and Jyutping sequence levels.
