@@ -18,7 +18,15 @@ derived_private_files:
   train_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_train.csv
   dev_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_dev.csv
   test_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_test.csv
+  prompt_disjoint_v1_manifest: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_manifest.csv
+  prompt_disjoint_v1_train_split: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_train.csv
+  prompt_disjoint_v1_dev_split: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_dev.csv
+  prompt_disjoint_v1_test_split: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_test.csv
+  prompt_disjoint_v1_train_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl
+  prompt_disjoint_v1_dev_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl
+  prompt_disjoint_v1_test_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl
 cleaning_script: inference/scripts/prepare_experiment2_clean_manifest.py
+prompt_disjoint_split_script: finetune/scripts/prepare_prompt_disjoint_split.py
 notes:
   - Raw payload is intentionally excluded from git.
   - Public repository tracks code, split logic, and aggregate summaries only.

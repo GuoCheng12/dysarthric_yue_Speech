@@ -1,0 +1,4 @@
+split,sample_count,prompt_count,speaker_count,tracked_hard_speaker_count,zero_easy,zero_medium,zero_hard,duration_very_short,duration_short,duration_medium,duration_long,duration_very_long,disease_HD,disease_SCA,disease_unknown
+train,2159,99,71,54,1092,608,459,18,497,1400,241,3,96,208,1855
+dev,273,12,61,6,140,78,55,2,62,189,20,0,12,24,237
+test,275,12,43,6,135,78,62,1,65,174,34,1,12,26,237

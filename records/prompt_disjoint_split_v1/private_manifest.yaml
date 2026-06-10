@@ -1,0 +1,67 @@
+name: prompt_disjoint_split_v1
+artifact_type: private_prompt_disjoint_split
+payload_in_git: false
+privacy_level: private_patient_text_audio_paths_speaker_ids
+created_from:
+  - /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_train.csv
+  - /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_dev.csv
+  - /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_test.csv
+script: finetune/scripts/prepare_prompt_disjoint_split.py
+split_policy:
+  split_unit: prompt_id
+  prompt_identity_layers:
+    - raw_clean_gt
+    - normalized_clean_gt
+    - jyutping_sequence
+  grouping: connected_components_across_identity_layers
+  ratio: 80_10_10_by_prompt_group
+  seed: 20260610
+  search_trials: 30000
+  overlap_required: zero_between_train_dev_test
+private_files:
+  - path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_manifest.csv
+    role: private_full_manifest
+    record_count: 2707
+    line_count: 2708
+    sha256: 71d7517e3b7659b54098400121de5428fe482aae8414d5d3771291f12fc1ade0
+  - path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_train.csv
+    role: private_train_csv
+    record_count: 2159
+    line_count: 2160
+    sha256: 0b0ca3f05622bcba56abb3cc7b670023e885b3650a6bb5ecfbf0c968884e38ff
+  - path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_dev.csv
+    role: private_dev_csv
+    record_count: 273
+    line_count: 274
+    sha256: 71da6272e1361e070a2ee4f1b78a2cfad84327b1e846d9c3f80d57b4c1e9488d
+  - path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_test.csv
+    role: private_test_csv
+    record_count: 275
+    line_count: 276
+    sha256: c6df928631ab1654c2f99cc5616304a363aa9062cae4a3fa3ba01cd5f1d2527a
+  - path: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl
+    role: sft_train_jsonl
+    record_count: 2159
+    line_count: 2159
+    sha256: c70903922a96224f66f6d8a6ea8e87e00e0dbb628f0dc95df7afd4d767781729
+  - path: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl
+    role: sft_dev_jsonl
+    record_count: 273
+    line_count: 273
+    sha256: 9986ff3221eb200fb5b433d6c8cab9931d9e869f11f2755349802d7f51a4f3c2
+  - path: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl
+    role: sft_test_jsonl
+    record_count: 275
+    line_count: 275
+    sha256: 9c5ef43308809bfd20cb749dadaaef7db765f8eb0384b23bc37100ce384435e6
+  - path: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_smoke_train.jsonl
+    role: sft_smoke_train_jsonl
+    record_count: 32
+    line_count: 32
+    sha256: 52828a83e39987204dba90caedd12d65f7e6d6385b6659192722c682e6de5c26
+  - path: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_smoke_dev.jsonl
+    role: sft_smoke_dev_jsonl
+    record_count: 16
+    line_count: 16
+    sha256: 1954d732718046fb2a1f69a8c12419446377359a85682dc2713266fd27a9b567
+public_record: records/prompt_disjoint_split_v1
