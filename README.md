@@ -40,6 +40,7 @@ benchmarks/
 docs/
   experiment2_context.md
   run_e2_pooled_sft.md
+  e3_lora_sft_protocol.md
   evaluation_protocol.md
   e2_fullsft_clean_pooled_epoch2_baseline.md
 examples/

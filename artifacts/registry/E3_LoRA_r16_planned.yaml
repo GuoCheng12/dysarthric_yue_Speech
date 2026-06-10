@@ -1,0 +1,31 @@
+name: E3_LoRA_r16_best_dev
+artifact_type: planned_lora_adapter_and_evaluation
+payload_in_git: false
+privacy_level: private_adapter_private_eval_rows
+base_model: Qwen/Qwen3-ASR-1.7B
+training_type: peft_lora_sft
+source_data: vlink_data_raw_clean_read_sentence
+rank: 16
+alpha: 32
+dropout: 0.05
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+dry_run_observed:
+  matched_linear_module_count: 268
+  trainable_parameters: 19791872
+  total_parameters: 2057844352
+  trainable_ratio: 0.009618
+planned_private_output_dir: /data/qwen3-asr/finetune/e3-lora-r16
+planned_selection_rule: best dev overall CER, inspected for hard CER and regressions
+comparison_baseline: E2_fullSFT_clean_pooled_epoch2
+evaluation_focus:
+  - hard CER
+  - medium regression count
+  - per-speaker worst case
+protocol: docs/e3_lora_sft_protocol.md

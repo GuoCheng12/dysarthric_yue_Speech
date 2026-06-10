@@ -7,3 +7,4 @@ soundfile
 qwen-asr
 opencc-python-reimplemented
 pandas
+peft
