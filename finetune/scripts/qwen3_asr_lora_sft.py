@@ -54,6 +54,7 @@ def parse_args():
     p.add_argument("--grad_acc", type=int, default=32)
     p.add_argument("--lr", type=float, default=2e-4)
     p.add_argument("--epochs", type=float, default=3)
+    p.add_argument("--max_steps", type=int, default=-1)
     p.add_argument("--log_steps", type=int, default=5)
     p.add_argument("--lr_scheduler_type", type=str, default="linear")
     p.add_argument("--warmup_ratio", type=float, default=0.02)
@@ -66,9 +67,12 @@ def parse_args():
     p.add_argument("--save_strategy", type=str, default="steps")
     p.add_argument("--save_steps", type=int, default=69)
     p.add_argument("--save_total_limit", type=int, default=3)
+    p.add_argument("--save_final_checkpoint", type=int, default=0)
 
     p.add_argument("--resume_from", type=str, default="")
     p.add_argument("--resume", type=int, default=0)
+    p.add_argument("--report_to", type=str, default="none")
+    p.add_argument("--run_name", type=str, default="")
 
     p.add_argument("--lora_rank", type=int, default=16)
     p.add_argument("--lora_alpha", type=float, default=32)
@@ -212,6 +216,7 @@ def main():
         gradient_accumulation_steps=args.grad_acc,
         learning_rate=args.lr,
         num_train_epochs=args.epochs,
+        max_steps=args.max_steps,
         logging_steps=args.log_steps,
         lr_scheduler_type=args.lr_scheduler_type,
         warmup_ratio=args.warmup_ratio,
@@ -230,7 +235,8 @@ def main():
         fp16=not use_bf16,
         ddp_find_unused_parameters=False,
         remove_unused_columns=False,
-        report_to="none",
+        report_to=args.report_to,
+        run_name=args.run_name or None,
     )
 
     trainer = CastFloatInputsTrainer(
@@ -253,6 +259,17 @@ def main():
         trainer.train(resume_from_checkpoint=resume_from)
     else:
         trainer.train()
+
+    if args.save_final_checkpoint == 1 and trainer.args.process_index == 0:
+        final_step = trainer.state.global_step
+        if args.save_steps <= 0 or final_step % args.save_steps != 0:
+            final_dir = Path(args.output_dir) / f"checkpoint-{final_step}"
+            final_dir.mkdir(parents=True, exist_ok=True)
+            trainer.save_model(str(final_dir))
+            copy_required_hf_files_for_qwen_asr(args.model_path, str(final_dir))
+            trainer.state.save_to_json(str(final_dir / "trainer_state.json"))
+            torch.save(training_args, final_dir / "training_args.bin")
+            print(f"[save_final_checkpoint] saved {final_dir}", flush=True)
 
 
 if __name__ == "__main__":
