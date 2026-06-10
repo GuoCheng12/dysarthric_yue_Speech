@@ -71,7 +71,13 @@ def parse_args():
     p.add_argument("--resume", type=int, default=0)
 
     p.add_argument("--lora_rank", type=int, default=16)
-    p.add_argument("--lora_alpha", type=int, default=32)
+    p.add_argument("--lora_alpha", type=float, default=32)
+    p.add_argument(
+        "--lora_scale",
+        type=float,
+        default=None,
+        help="Optional LoRA scaling lambda. When set, lora_alpha = lora_rank * lora_scale.",
+    )
     p.add_argument("--lora_dropout", type=float, default=0.05)
     p.add_argument("--lora_target_modules", type=str, default=DEFAULT_TARGET_MODULES)
     p.add_argument("--lora_bias", type=str, default="none", choices=["none", "all", "lora_only"])
@@ -118,6 +124,7 @@ def write_lora_metadata(path: Path, args, target_modules, matched_count, model):
         "eval_file": args.eval_file,
         "lora_rank": args.lora_rank,
         "lora_alpha": args.lora_alpha,
+        "lora_scale": args.lora_alpha / args.lora_rank,
         "lora_dropout": args.lora_dropout,
         "lora_bias": args.lora_bias,
         "lora_target_modules": target_modules,
@@ -136,6 +143,10 @@ def main():
     args = parse_args()
     if not args.train_file:
         raise ValueError("TRAIN_FILE is required (json/jsonl). Needs fields: audio, text, optional prompt")
+    if args.lora_scale is not None:
+        if args.lora_scale <= 0:
+            raise ValueError("--lora_scale must be positive")
+        args.lora_alpha = args.lora_rank * args.lora_scale
 
     use_bf16 = torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 8
     asr_wrapper = Qwen3ASRModel.from_pretrained(
