@@ -1,0 +1,24 @@
+name: vlink_data_raw
+privacy_level: private_patient_data
+payload_in_git: false
+description: >
+  Private Cantonese patient speech dataset used for Qwen3-ASR zero-shot
+  inference and Experiment 2 cleaned pooled SFT.
+expected_private_layout:
+  root_env: QWEN3_ASR_DATA
+  example_root: /data/qwen3-asr/datasets/Speech_data/vlink_data_raw
+  speaker_dirs: true
+  transcript_files: transcript.txt
+  audio_glob: "**/*.wav"
+known_counts:
+  wav_files: 3558
+  speaker_transcript_files: 71
+derived_private_files:
+  clean_manifest: /data/qwen3-asr/inference/outputs/experiment2/clean_manifest.csv
+  train_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_train.csv
+  dev_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_dev.csv
+  test_split: /data/qwen3-asr/inference/outputs/experiment2/clean_read_sentence_test.csv
+cleaning_script: inference/scripts/prepare_experiment2_clean_manifest.py
+notes:
+  - Raw payload is intentionally excluded from git.
+  - Public repository tracks code, split logic, and aggregate summaries only.

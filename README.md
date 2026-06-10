@@ -1,8 +1,8 @@
 # Dysarthric Yue Speech ASR Experiments
 
-This repository contains the code framework used for Cantonese dysarthric speech ASR experiments with Qwen3-ASR.
+This repository is the source of truth for Cantonese dysarthric speech ASR experiments with Qwen3-ASR.
 
-The repository intentionally excludes patient audio, transcripts, raw inference outputs, model weights, fine-tuned checkpoints, caches, virtual environments, and local proxy/Codex authentication files.
+It manages code, experiment protocols, resource registries, dataset registries, aggregate results, and reproducibility documentation. Large or sensitive payloads such as patient audio, raw transcripts, per-utterance private predictions, model weights, checkpoints, caches, virtual environments, and local proxy/Codex authentication files are tracked through manifests and checksums rather than committed as raw files.
 
 ## Current Baseline
 
@@ -47,7 +47,23 @@ examples/
   dataset_layout.md
 results/
   public aggregate summaries only
+data/
+  registry/                    # private dataset manifests and version records
+artifacts/
+  registry/                    # checkpoint/result artifact records
 ```
+
+## Repository Management Rule
+
+All project work should be represented in this repository.
+
+- Code changes live in `src/`, `inference/`, `finetune/`, or `benchmarks/`.
+- Dataset versions live in `data/registry/`.
+- Model/checkpoint/result artifact records live in `artifacts/registry/`.
+- Experiment decisions and protocols live in `docs/`.
+- Public aggregate summaries live in `results/`.
+
+Private or large files are still kept outside Git; the repository records where they are, how they were produced, and how to verify them.
 
 ## Evaluation Rule For Future Experiments
 
@@ -71,12 +87,14 @@ The generated `three_way_summary_by_group.csv` is the canonical comparison table
 
 ## Data And Model Policy
 
-This public repository is code-only. Keep the following outside git:
+Keep the following payloads outside normal Git commits:
 
 - patient audio and transcript files
 - per-utterance predictions and manifests containing patient text
 - Qwen model weights
 - full fine-tuned checkpoints and optimizer states
 - local VPN/proxy/Codex authentication files
+
+For each such payload, add or update a registry entry with its purpose, private path or storage URI, version, checksum when available, generation command, and privacy level.
 
 See `examples/dataset_layout.md` for the expected private filesystem layout.

@@ -1,0 +1,22 @@
+name: E2_fullSFT_clean_pooled_epoch2
+artifact_type: model_checkpoint_and_evaluation_baseline
+payload_in_git: false
+privacy_level: private_checkpoint_private_eval_rows
+base_model: Qwen/Qwen3-ASR-1.7B
+training_type: full_parameter_sft
+source_run: e2-pooled-sft-3epoch
+source_checkpoint: checkpoint-138
+epoch: 2
+private_checkpoint_path: /data/qwen3-asr/finetune/e2-pooled-sft-3epoch/checkpoint-138
+private_checkpoint_alias: /data/qwen3-asr/finetune/baselines/E2_fullSFT_clean_pooled_epoch2/checkpoint
+private_eval_predictions:
+  dev: /data/qwen3-asr/finetune/baselines/E2_fullSFT_clean_pooled_epoch2/dev_predictions.csv
+  test: /data/qwen3-asr/finetune/baselines/E2_fullSFT_clean_pooled_epoch2/test_predictions.csv
+public_aggregate_summary: results/e2_fullsft_clean_pooled_epoch2_public_summary.csv
+test_headline:
+  sample_count: 258
+  zero_shot_cer: 0.277309
+  baseline_cer: 0.139254
+  zero_shot_critical_rate: 0.205426
+  baseline_critical_rate: 0.089147
+evaluation_protocol: docs/evaluation_protocol.md

@@ -10,10 +10,17 @@ venvs/
 
 # Large or sensitive ASR artifacts
 datasets/
-data/
+data/*
+!data/README.md
+!data/registry/
+!data/registry/**
 models/
 checkpoints/
 checkpoint-*/
+artifacts/*
+!artifacts/README.md
+!artifacts/registry/
+!artifacts/registry/**
 cache/
 logs/
 tmp/
