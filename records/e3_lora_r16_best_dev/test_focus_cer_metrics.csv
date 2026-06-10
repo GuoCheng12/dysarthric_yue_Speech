@@ -1,0 +1,3 @@
+metric,sample_count,zero_shot_cer,E2_fullSFT_clean_pooled_epoch2_cer,new_method_cer,delta_new_vs_E2_fullSFT_clean_pooled_epoch2_cer,delta_new_vs_zero_cer
+hard_cer,53,0.792076,0.466393,0.157622,-0.308772,-0.634454
+medium_cer,70,0.304910,0.116754,0.025169,-0.091585,-0.279740

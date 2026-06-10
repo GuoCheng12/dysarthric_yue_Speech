@@ -1,5 +1,5 @@
 name: E3_LoRA_r16_best_dev
-artifact_type: planned_lora_adapter_and_evaluation
+artifact_type: completed_lora_adapter_and_evaluation
 payload_in_git: false
 privacy_level: private_adapter_private_eval_rows
 base_model: Qwen/Qwen3-ASR-1.7B
@@ -21,11 +21,14 @@ dry_run_observed:
   trainable_parameters: 19791872
   total_parameters: 2057844352
   trainable_ratio: 0.009618
-planned_private_output_dir: /data/qwen3-asr/finetune/e3-lora-r16
-planned_selection_rule: best dev overall CER, inspected for hard CER and regressions
+private_output_dir: /data/qwen3-asr/finetune/e3-lora-r16-10epoch
+selected_checkpoint: checkpoint-483
+selected_epoch: 7
+selection_rule: best dev overall CER after ASR inference over all saved checkpoints
 comparison_baseline: E2_fullSFT_clean_pooled_epoch2
 evaluation_focus:
   - hard CER
   - medium regression count
   - per-speaker worst case
 protocol: docs/e3_lora_sft_protocol.md
+public_record: records/e3_lora_r16_best_dev
