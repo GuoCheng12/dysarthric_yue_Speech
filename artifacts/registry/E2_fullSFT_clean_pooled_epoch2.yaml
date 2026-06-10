@@ -13,6 +13,10 @@ private_eval_predictions:
   dev: /data/qwen3-asr/finetune/baselines/E2_fullSFT_clean_pooled_epoch2/dev_predictions.csv
   test: /data/qwen3-asr/finetune/baselines/E2_fullSFT_clean_pooled_epoch2/test_predictions.csv
 public_aggregate_summary: results/e2_fullsft_clean_pooled_epoch2_public_summary.csv
+sanitized_records:
+  error_movement_summary: records/e2_error_movement/test_error_movement_summary.csv
+  error_movement_per_sample: records/e2_error_movement/test_error_movement_per_sample_sanitized.csv
+  error_movement_readme: records/e2_error_movement/README.md
 test_headline:
   sample_count: 258
   zero_shot_cer: 0.277309

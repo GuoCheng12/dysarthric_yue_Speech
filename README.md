@@ -47,6 +47,8 @@ examples/
   dataset_layout.md
 results/
   public aggregate summaries only
+records/
+  e2_error_movement/           # sanitized per-sample error movement records
 data/
   registry/                    # private dataset manifests and version records
 artifacts/
@@ -62,6 +64,7 @@ All project work should be represented in this repository.
 - Model/checkpoint/result artifact records live in `artifacts/registry/`.
 - Experiment decisions and protocols live in `docs/`.
 - Public aggregate summaries live in `results/`.
+- Sanitized experiment records live in `records/`.
 
 Private or large files are still kept outside Git; the repository records where they are, how they were produced, and how to verify them.
 
@@ -98,3 +101,11 @@ Keep the following payloads outside normal Git commits:
 For each such payload, add or update a registry entry with its purpose, private path or storage URI, version, checksum when available, generation command, and privacy level.
 
 See `examples/dataset_layout.md` for the expected private filesystem layout.
+
+## Current Records
+
+- `records/e2_error_movement/`: test-set movement table for `zero_shot` vs `E2_fullSFT_clean_pooled_epoch2`.
+  - `Rescued`: zero-shot critical, epoch2 non-critical.
+  - `Still hard`: critical before and after epoch2.
+  - `Regression`: non-critical in zero-shot, critical after epoch2.
+  - `Stable easy`: non-critical in both.

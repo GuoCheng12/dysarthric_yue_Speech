@@ -1,0 +1,4 @@
+disease_tag,sample_count,Rescued,Still hard,Regression,Stable easy,rescued_rate_among_zero_critical,regression_rate_among_zero_noncritical
+HD,12,0,1,0,11,0.000000,0.000000
+SCA,25,7,4,2,12,0.636364,0.142857
+unknown,221,26,15,1,179,0.634146,0.005556

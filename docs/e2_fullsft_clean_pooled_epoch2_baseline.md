@@ -47,3 +47,18 @@ Every later method must report three columns on the same dev/test split:
 3. `new_method`
 
 At minimum, report CER and critical error rate/count for overall, zero-shot difficulty buckets, disease tag, duration bucket, and speaker.
+
+## Error Movement Record
+
+The sanitized test-set error movement table is stored under:
+
+`records/e2_error_movement/`
+
+Headline counts:
+
+| category | count | meaning |
+|---|---:|---|
+| Rescued | 33 | zero-shot critical samples recovered by epoch2 |
+| Still hard | 20 | samples still critical after epoch2 |
+| Regression | 3 | samples made critical by epoch2 |
+| Stable easy | 202 | samples non-critical before and after epoch2 |

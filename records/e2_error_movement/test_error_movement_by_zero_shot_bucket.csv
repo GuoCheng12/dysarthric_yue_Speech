@@ -1,0 +1,4 @@
+zero_shot_bucket,sample_count,Rescued,Still hard,Regression,Stable easy,rescued_rate_among_zero_critical,regression_rate_among_zero_noncritical
+easy,135,0,0,0,135,,0.000000
+hard,53,33,20,0,0,0.622642,
+medium,70,0,0,3,67,,0.042857
