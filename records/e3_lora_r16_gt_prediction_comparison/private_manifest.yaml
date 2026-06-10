@@ -1,0 +1,20 @@
+name: E3_LoRA_r16_gt_prediction_comparison_test
+artifact_type: private_per_utterance_prediction_table
+payload_in_git: false
+privacy_level: private_patient_text_private_predictions
+method: E3_LoRA_r16_best_dev_checkpoint_483
+split: test
+sample_count: 258
+csv_line_count_including_header: 259
+private_path: /data/qwen3-asr/finetune/e3-lora-r16-10epoch/eval_test_gt_prediction_comparison/test_gt_vs_predictions_zero_full_lora.csv
+sha256: 6febbe80daa4190ff52abce83e9dc40b36db56d2147366f6502fbc26d00f910f
+contains:
+  - clean_gt
+  - zero_shot_predict
+  - full_sft_predict
+  - lora_predict
+  - cer_metrics
+  - critical_flags
+  - audio_path
+  - raw_speaker_id
+public_index: records/e3_lora_r16_gt_prediction_comparison/README.md

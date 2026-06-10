@@ -22,6 +22,12 @@ dry_run_observed:
   total_parameters: 2057844352
   trainable_ratio: 0.009618
 private_output_dir: /data/qwen3-asr/finetune/e3-lora-r16-10epoch
+private_eval_tables:
+  test_gt_prediction_comparison:
+    path: /data/qwen3-asr/finetune/e3-lora-r16-10epoch/eval_test_gt_prediction_comparison/test_gt_vs_predictions_zero_full_lora.csv
+    sha256: 6febbe80daa4190ff52abce83e9dc40b36db56d2147366f6502fbc26d00f910f
+    sample_count: 258
+    privacy_level: private_patient_text_private_predictions
 selected_checkpoint: checkpoint-483
 selected_epoch: 7
 selection_rule: best dev overall CER after ASR inference over all saved checkpoints
@@ -32,3 +38,4 @@ evaluation_focus:
   - per-speaker worst case
 protocol: docs/e3_lora_sft_protocol.md
 public_record: records/e3_lora_r16_best_dev
+public_private_table_index: records/e3_lora_r16_gt_prediction_comparison
