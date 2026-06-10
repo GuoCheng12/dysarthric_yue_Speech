@@ -1,0 +1,46 @@
+name: e3_lora_r16_prompt_disjoint_v1
+artifact_type: private_lora_training_and_predictions
+payload_in_git: false
+privacy_level: private_patient_text_predictions_audio_paths_speaker_ids
+model:
+  base_model: /data/qwen3-asr/models/Qwen3-ASR-1.7B
+  method: LoRA
+  rank: 16
+  alpha: 32
+  dropout: 0.05
+split:
+  name: prompt_disjoint_v1
+  train_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl
+  dev_csv: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_dev.csv
+  test_csv: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_test.csv
+training:
+  output_dir: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch
+  epochs: 8
+  total_steps: 544
+  save_steps: 68
+  best_dev_checkpoint_by_cer: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/checkpoint-68
+private_files:
+  - path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/train.log
+    role: private_training_log
+    sha256: 691ed1b0700a1d6f9960160dc30e6a181bef429d9c57dd45fbdbe7a3bccd37ba
+  - path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/checkpoint-68/adapter_model.safetensors
+    role: private_best_dev_lora_adapter
+    sha256: f010bb45552874a35a6f0c355a2729a0ac9dcbcab7c70921014af5501eecb0a7
+  - path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/checkpoint-68/adapter_config.json
+    role: private_best_dev_lora_adapter_config
+    sha256: 4998cb10ba1428dc3ecf85149e84e4711b6546162242bdaa517c0f965c1156a8
+  - path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/eval_test_best_dev_checkpoint_68/predictions.csv
+    role: private_best_dev_test_predictions
+    record_count: 275
+    sha256: 46836d471741d7f911a0c1ff496fdb132cd73a5571f5c608775d2537166f6eb3
+public_files:
+  - path: records/e3_lora_r16_prompt_disjoint_v1/dev_checkpoint_selection_summary.csv
+    source_path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/dev_selection/dev_checkpoint_selection_summary.csv
+    sha256: 5ac5a9fffc476abc570e115d9233a2341f1a352f5f051e326128ec4ff1a80869
+  - path: records/e3_lora_r16_prompt_disjoint_v1/test_best_dev_checkpoint_68_focus_summary.csv
+    source_path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/eval_test_best_dev_checkpoint_68/summary_by_group.csv
+    source_sha256: fde99502069183303d4d966aa93fb2bdfae8aa35adb064a4d1a63b23e881dd45
+  - path: records/e3_lora_r16_prompt_disjoint_v1/lora_run_metadata.json
+    source_path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_r16_8epoch/lora_run_metadata.json
+    sha256: c88d88faeddf0e8729b6f8c015d88169d4e971239efd764d11dc3945c37d6855
+public_record: records/e3_lora_r16_prompt_disjoint_v1

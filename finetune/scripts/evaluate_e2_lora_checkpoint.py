@@ -4,6 +4,7 @@
 import argparse
 import csv
 import json
+import re
 import statistics
 import sys
 from collections import defaultdict
@@ -24,10 +25,32 @@ for candidate in (REPO_ROOT / "src", Path("/data/qwen3-asr/src")):
         break
 
 try:
-    from eval_asr_dir import edit_distance, text_normalize
+    from eval_asr_dir import (
+        CHINESE_DIGITS,
+        CHINESE_NUMBER_CHARS,
+        YUE_REPLACEMENTS,
+        edit_distance,
+        normalize_text,
+        parse_chinese_number,
+        text_normalize,
+        to_traditional,
+    )
 except Exception:
+    CHINESE_DIGITS = {}
+    CHINESE_NUMBER_CHARS = ""
+    YUE_REPLACEMENTS = []
+
     def text_normalize(text):
         return "".join(str(text).lower().split())
+
+    def normalize_text(text):
+        return "".join(str(text).split())
+
+    def to_traditional(text):
+        return text
+
+    def parse_chinese_number(text):
+        return None
 
     def edit_distance(a, b):
         prev = list(range(len(b) + 1))
@@ -37,6 +60,36 @@ except Exception:
                 cur.append(min(prev[j] + 1, cur[-1] + 1, prev[j - 1] + (ca != cb)))
             prev = cur
         return prev[-1]
+
+
+def safe_normalize_numbers(text):
+    if not CHINESE_NUMBER_CHARS:
+        return text
+    pattern = f"[{re.escape(CHINESE_NUMBER_CHARS)}]{{2,}}"
+
+    def replace_token(match):
+        token = match.group(0)
+        if CHINESE_DIGITS and all(ch in CHINESE_DIGITS for ch in token):
+            return "".join(CHINESE_DIGITS[ch] for ch in token)
+        try:
+            parsed = parse_chinese_number(token)
+        except Exception:
+            return token
+        return str(parsed) if parsed is not None else token
+
+    return re.sub(pattern, replace_token, text)
+
+
+def safe_text_normalize(text):
+    try:
+        return text_normalize(text)
+    except Exception:
+        text = normalize_text(text)
+        text = to_traditional(text)
+        text = safe_normalize_numbers(text)
+        for source, target in YUE_REPLACEMENTS:
+            text = text.replace(source, target)
+        return text.lower()
 
 
 def parse_args():
@@ -58,8 +111,8 @@ def read_rows(path):
 
 
 def cer(ref, hyp):
-    ref_n = text_normalize(ref or "")
-    hyp_n = text_normalize(hyp or "")
+    ref_n = safe_text_normalize(ref or "")
+    hyp_n = safe_text_normalize(hyp or "")
     return edit_distance(ref_n, hyp_n) / max(1, len(ref_n))
 
 
@@ -68,7 +121,7 @@ def parse_bool(value):
 
 
 def critical_error(pred_text, error_rate):
-    return not text_normalize(pred_text or "") or error_rate >= 0.5
+    return not safe_text_normalize(pred_text or "") or error_rate >= 0.5
 
 
 def write_csv(path, rows, fields):

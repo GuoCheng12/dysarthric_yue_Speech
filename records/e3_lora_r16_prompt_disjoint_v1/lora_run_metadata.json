@@ -1,0 +1,23 @@
+{
+  "method": "LoRA",
+  "base_model": "/data/qwen3-asr/models/Qwen3-ASR-1.7B",
+  "train_file": "/data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl",
+  "eval_file": "/data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl",
+  "lora_rank": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "lora_bias": "none",
+  "lora_target_modules": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+  ],
+  "matched_linear_module_count": 268,
+  "trainable_parameters": 19791872,
+  "total_parameters": 2057844352,
+  "trainable_ratio": 0.009617769186850532
+}
