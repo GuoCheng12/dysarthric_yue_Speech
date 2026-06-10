@@ -13,6 +13,7 @@ import csv
 import json
 import math
 import os
+import shutil
 import subprocess
 import sys
 import uuid
@@ -228,12 +229,36 @@ def main() -> None:
         run.log_artifact(artifact)
 
     if eval_rows:
+        best_row = min(eval_rows, key=lambda row: row["dev/cer"])
+        best_step = int(best_row["step"])
+        retention = {
+            "best_metric": "dev/cer",
+            "best_step": best_step,
+            "best_checkpoint": str(output_dir / f"checkpoint-{best_step}"),
+            "deleted_checkpoints": [],
+            "retained_checkpoints": [str(output_dir / f"checkpoint-{best_step}")],
+        }
         fields = list(eval_rows[0].keys())
         with (output_dir / "dev_cer_by_checkpoint.csv").open("w", encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fields)
             writer.writeheader()
             writer.writerows(eval_rows)
         run.save(str(output_dir / "dev_cer_by_checkpoint.csv"), base_path=str(output_dir))
+        run.summary["best/dev_cer"] = best_row["dev/cer"]
+        run.summary["best/dev_critical_count"] = best_row["dev/critical_count"]
+        run.summary["best/dev_hard_cer"] = best_row["dev/hard_cer"]
+        run.summary["best/global_step"] = best_step
+
+        for checkpoint in sorted(output_dir.glob("checkpoint-*")):
+            if checkpoint.name == f"checkpoint-{best_step}":
+                continue
+            shutil.rmtree(checkpoint)
+            retention["deleted_checkpoints"].append(str(checkpoint))
+        (output_dir / "checkpoint_retention.json").write_text(
+            json.dumps(retention, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        run.save(str(output_dir / "checkpoint_retention.json"), base_path=str(output_dir))
     run.finish()
 
 
