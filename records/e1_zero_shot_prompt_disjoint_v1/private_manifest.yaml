@@ -1,0 +1,44 @@
+name: e1_zero_shot_prompt_disjoint_v1
+artifact_type: private_zero_shot_predictions
+payload_in_git: false
+privacy_level: private_patient_text_predictions_audio_paths_speaker_ids
+model:
+  name: Qwen3-ASR-1.7B
+  path: /data/qwen3-asr/models/Qwen3-ASR-1.7B
+split:
+  name: prompt_disjoint_v1
+  manifest: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_manifest.csv
+script: inference/scripts/run_prompt_disjoint_zero_shot.py
+command: >
+  source /data/qwen3-asr/env.sh &&
+  source /data/qwen3-asr/venvs/qwen3-asr/bin/activate &&
+  python inference/scripts/run_prompt_disjoint_zero_shot.py
+  --out-dir /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot
+  --batch-size 8
+critical_error_rule: inference_error_or_blank_or_textnorm_cer>=0.5
+private_files:
+  - path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/predictions_all.jsonl
+    role: private_all_predictions_jsonl
+    record_count: 2707
+    sha256: beb050235eed9d9ac473dc93c3a74cb0752e95db5840ef6877dae825d417b043
+  - path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/predictions_all_private.csv
+    role: private_all_predictions_csv
+    record_count: 2707
+    sha256: d60da2552db71d32f529150a0551e5e095ad18398f308c28e86d284aad73db9f
+  - path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/predictions_test_private.csv
+    role: private_test_predictions_csv
+    record_count: 275
+    sha256: e3b97a363349318e419c9de207a6125c189d330024e615e363d414251c7b8776
+public_files:
+  - path: records/e1_zero_shot_prompt_disjoint_v1/test_set_performance.csv
+    source_path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/test_set_performance.csv
+    record_count: 13
+    sha256: 4354000c650122a602375481de352d9c11d3671316554235b78a9ec95654b861
+  - path: records/e1_zero_shot_prompt_disjoint_v1/full_dataset_performance.csv
+    source_path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/full_dataset_performance.csv
+    record_count: 15
+    sha256: e655b2b855f1bf0a89de4feb8a1ff6df5301d1c292ecbc68c059f4ee70471bf2
+  - path: records/e1_zero_shot_prompt_disjoint_v1/run_summary.json
+    source_path: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/run_summary.json
+    sha256: ff7c3dab2fed58ed695ddca31ee106e0d694dd2fe907817207d1639bf1dd5a41
+public_record: records/e1_zero_shot_prompt_disjoint_v1

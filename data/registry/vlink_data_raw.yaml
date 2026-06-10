@@ -25,8 +25,10 @@ derived_private_files:
   prompt_disjoint_v1_train_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl
   prompt_disjoint_v1_dev_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl
   prompt_disjoint_v1_test_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl
+  prompt_disjoint_v1_e1_zero_shot_dir: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot
 cleaning_script: inference/scripts/prepare_experiment2_clean_manifest.py
 prompt_disjoint_split_script: finetune/scripts/prepare_prompt_disjoint_split.py
+prompt_disjoint_e1_zero_shot_script: inference/scripts/run_prompt_disjoint_zero_shot.py
 notes:
   - Raw payload is intentionally excluded from git.
   - Public repository tracks code, split logic, and aggregate summaries only.

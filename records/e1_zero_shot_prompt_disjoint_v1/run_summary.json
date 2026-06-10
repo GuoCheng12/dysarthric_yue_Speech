@@ -1,0 +1,7 @@
+{
+  "all_predictions": 2707,
+  "test_predictions": 275,
+  "full_dataset_performance": "/data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/full_dataset_performance.csv",
+  "test_set_performance": "/data/qwen3-asr/inference/outputs/prompt_disjoint_v1/e1_zero_shot/test_set_performance.csv",
+  "critical_rule": "inference_error_or_blank_or_textnorm_cer>=0.5"
+}

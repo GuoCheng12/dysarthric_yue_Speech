@@ -1,0 +1,14 @@
+scope,group_type,group_value,sample_count,inferred_count,inference_error_count,avg_textnorm_cer,avg_critical_error,critical_error_count,critical_error_labeled,avg_duration_sec
+test_set,overall,overall,275,275,0,0.290028,0.203636,56,275,6.939975
+test_set,e1_zero_shot_bucket,easy,134,134,0,0.064696,0.0,0,134,6.069701
+test_set,e1_zero_shot_bucket,hard,56,56,0,0.796373,1.0,56,56,8.167643
+test_set,e1_zero_shot_bucket,medium,85,85,0,0.311667,0.0,0,85,7.503118
+test_set,disease_tag,HD,12,12,0,0.289352,0.166667,2,12,5.761083
+test_set,disease_tag,SCA,26,26,0,0.553739,0.576923,15,26,9.460654
+test_set,disease_tag,unknown,237,237,0,0.261132,0.164557,39,237,6.723135
+test_set,duration_bucket,long,34,34,0,0.526471,0.5,17,34,11.864647
+test_set,duration_bucket,medium,174,174,0,0.262746,0.172414,30,174,7.052098
+test_set,duration_bucket,short,65,65,0,0.227153,0.123077,8,65,3.9466
+test_set,duration_bucket,very_long,1,1,0,0.375,0.0,0,1,20.125
+test_set,duration_bucket,very_short,1,1,0,1.0,1.0,1,1,1.376
+test_set,split,test,275,275,0,0.290028,0.203636,56,275,6.939975

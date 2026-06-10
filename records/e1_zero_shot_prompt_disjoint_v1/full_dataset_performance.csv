@@ -1,0 +1,16 @@
+scope,group_type,group_value,sample_count,inferred_count,inference_error_count,avg_textnorm_cer,avg_critical_error,critical_error_count,critical_error_labeled,avg_duration_sec
+full_dataset,overall,overall,2707,2707,0,0.281067,0.208349,564,2707,6.889126
+full_dataset,e1_zero_shot_bucket,easy,1376,1376,0,0.062986,0.0,0,1376,6.441178
+full_dataset,e1_zero_shot_bucket,hard,564,564,0,0.780264,1.0,564,564,7.729303
+full_dataset,e1_zero_shot_bucket,medium,767,767,0,0.305231,0.0,0,767,7.074935
+full_dataset,disease_tag,HD,120,120,0,0.205785,0.091667,11,120,5.801675
+full_dataset,disease_tag,SCA,258,258,0,0.63265,0.651163,168,258,10.01919
+full_dataset,disease_tag,unknown,2329,2329,0,0.245999,0.165307,385,2329,6.598416
+full_dataset,duration_bucket,long,295,295,0,0.515058,0.447458,132,295,12.333546
+full_dataset,duration_bucket,medium,1763,1763,0,0.243707,0.164492,290,1763,6.990578
+full_dataset,duration_bucket,short,624,624,0,0.252295,0.190705,119,624,4.09526
+full_dataset,duration_bucket,very_long,4,4,0,0.669147,0.75,3,4,24.9005
+full_dataset,duration_bucket,very_short,21,21,0,0.911565,0.952381,20,21,1.47781
+full_dataset,split,dev,273,273,0,0.304615,0.197802,54,273,6.585982
+full_dataset,split,test,275,275,0,0.290028,0.203636,56,275,6.939975
+full_dataset,split,train,2159,2159,0,0.276948,0.210283,454,2159,6.920981
