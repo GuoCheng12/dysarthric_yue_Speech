@@ -1,0 +1,41 @@
+name: e3_lora_scale_sweep_1epoch_prompt_disjoint_v1
+artifact_type: private_lora_scale_sweep_predictions
+payload_in_git: false
+privacy_level: private_patient_text_predictions_audio_paths
+split:
+  name: prompt_disjoint_v1
+  train_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl
+  dev_jsonl: /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl
+  test_csv: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1/prompt_disjoint_test.csv
+training:
+  output_dir: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch
+  epochs_per_run: 1
+  rank: 16
+  learning_rate: 0.0002
+  scales:
+    - 0.1
+    - 0.25
+    - 0.5
+checkpoint_retention:
+  retained_checkpoints: false
+  note: Temporary checkpoint-68 directories were deleted after test evaluation.
+private_files:
+  - path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/scale_0p1/eval_test_checkpoint_68/predictions.csv
+    role: private_test_predictions_scale_0p1
+  - path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/scale_0p25/eval_test_checkpoint_68/predictions.csv
+    role: private_test_predictions_scale_0p25
+  - path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/scale_0p5/eval_test_checkpoint_68/predictions.csv
+    role: private_test_predictions_scale_0p5
+public_files:
+  - path: records/e3_lora_scale_sweep_1epoch_prompt_disjoint_v1/sweep_test_overall.csv
+    source_path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/sweep_test_overall.csv
+    sha256: 49d9c1c4f3c2c69fc2f95105c2af87b6b0845123c1fbddcc75d8e7bde0a2e1bd
+  - path: records/e3_lora_scale_sweep_1epoch_prompt_disjoint_v1/test_focus_summary_scale_0p1.csv
+    source_path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/scale_0p1/test_focus_summary.csv
+    sha256: 9174a6dd95f53db5a6dfbdc02fbe068ec8829d32e91a434520310fa4a78a729c
+  - path: records/e3_lora_scale_sweep_1epoch_prompt_disjoint_v1/test_focus_summary_scale_0p25.csv
+    source_path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/scale_0p25/test_focus_summary.csv
+    sha256: c069021e47921adcefc90ab91544d3cc274c55406c6c5e672d4a4dc43636c3fa
+  - path: records/e3_lora_scale_sweep_1epoch_prompt_disjoint_v1/test_focus_summary_scale_0p5.csv
+    source_path: /data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/scale_0p5/test_focus_summary.csv
+    sha256: 84c84090e91c83263d092afcca2c5ba363d3273481341f5dbf042bc680be6aca

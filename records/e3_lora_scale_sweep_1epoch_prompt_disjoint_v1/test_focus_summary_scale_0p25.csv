@@ -1,0 +1,13 @@
+group,sample_count,zero_shot_cer,fine_tuned_cer,delta_cer,zero_shot_critical_rate,fine_tuned_critical_rate,delta_critical_rate,zero_shot_critical_count,fine_tuned_critical_count
+overall,275,0.302886,0.214282,-0.088604,0.225455,0.156364,-0.069091,62,43
+zero_shot_bucket=easy,135,0.065297,0.049834,-0.015463,0,0,0,0,0
+zero_shot_bucket=hard,62,0.779751,0.55569,-0.224061,1,0.612903,-0.387097,62,38
+zero_shot_bucket=medium,78,0.33505,0.227528,-0.107522,0,0.064103,0.064103,0,5
+disease_tag=HD,12,0.321098,0.163773,-0.157325,0.25,0.083333,-0.166667,3,1
+disease_tag=SCA,26,0.574687,0.461058,-0.113629,0.576923,0.576923,0.0,15,15
+disease_tag=unknown,237,0.272146,0.189767,-0.082379,0.185654,0.113924,-0.07173,44,27
+duration_bucket=long,34,0.526243,0.3779,-0.148343,0.470588,0.352941,-0.117647,16,12
+duration_bucket=medium,174,0.287421,0.200981,-0.086441,0.218391,0.143678,-0.074713,38,25
+duration_bucket=short,65,0.215615,0.150705,-0.06491,0.107692,0.076923,-0.030769,7,5
+duration_bucket=very_long,1,0.375,0.3125,-0.0625,0,0,0,0,0
+duration_bucket=very_short,1,1.0,1.0,0.0,1,1,0,1,1

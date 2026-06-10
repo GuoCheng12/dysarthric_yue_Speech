@@ -1,0 +1,4 @@
+lora_scale,lora_alpha,sample_count,test_cer,test_critical_rate,test_critical_count,delta_cer_vs_zero,hard_cer,hard_critical_count,medium_cer,medium_critical_count,easy_cer,easy_critical_count
+0.1,1.6,275,0.233107,0.163636,45,-0.069778,0.619991,40,0.247614,5,0.047046,0
+0.25,4.0,275,0.214282,0.156364,43,-0.088604,0.55569,38,0.227528,5,0.049834,0
+0.5,8.0,275,0.233896,0.167273,46,-0.06899,0.552569,36,0.264476,9,0.069874,1
