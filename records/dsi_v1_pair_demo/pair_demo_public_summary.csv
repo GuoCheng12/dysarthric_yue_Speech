@@ -1,0 +1,5 @@
+split,pair_count,unique_patient_count,buckets,avg_dys_duration,avg_norm_duration,norm_sample_rate
+train,2,2,easy:1;medium:1,5.692,10.000,24000
+dev,2,2,easy:1;medium:1,5.835,10.400,24000
+test,2,2,easy:1;medium:1,6.979,8.000,24000
+overall,6,5,easy:3;medium:3,6.169,9.467,24000

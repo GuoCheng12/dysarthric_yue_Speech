@@ -34,6 +34,8 @@ inference/scripts/
 finetune/
   official/qwen3_asr_sft.py     # Qwen3-ASR SFT script copy
   scripts/                      # JSONL prep, checkpoint eval, three-way comparison
+synthesis/
+  dsi_v1/                       # deterministic speech-imitation pair-data demos
 benchmarks/
   gpu_benchmark.py
   qwen_sft_batch_probe.py
@@ -111,3 +113,4 @@ See `examples/dataset_layout.md` for the expected private filesystem layout.
   - `Regression`: non-critical in zero-shot, critical after epoch2.
   - `Stable easy`: non-critical in both.
 - `records/prompt_leakage_e2_e3_test/`: train/test prompt leakage check at raw text, normalized text, and Jyutping sequence levels.
+- `records/dsi_v1_pair_demo/`: repo-safe record for the first normal-TTS/dysarthric pair-data demo.

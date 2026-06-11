@@ -1,0 +1,23 @@
+artifact: dsi_v1_pair_demo
+privacy: private_patient_text_and_audio_paths
+remote_root: /data/qwen3-asr/synthesis/dsi_v1/pair_demo
+pair_manifest_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo/pair_demo_manifest.csv
+pair_manifest_jsonl: /data/qwen3-asr/synthesis/dsi_v1/pair_demo/pair_demo_manifest.jsonl
+generated_pair_manifest_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo/pair_demo_manifest.generated.csv
+normal_tts_wav_root: /data/qwen3-asr/synthesis/dsi_v1/pair_demo/norm_tts_wav
+dysarthric_audio_source_root: /data/qwen3-asr/datasets/Speech_data/vlink_data_raw
+source_split_manifests:
+  - /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl
+  - /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl
+  - /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl
+tts_model:
+  repo_id: ASLP-lab/Cosyvoice2-Yue
+  local_dir: /data/qwen3-asr/models/tts/Cosyvoice2-Yue
+  runtime_repo: /data/qwen3-asr/third_party/CosyVoice
+  mode: cached_zero_shot
+  speaker_id: my_zero_shot_spk
+validation:
+  pair_count: 6
+  norm_wav_exists: 6
+  dys_wav_exists: 6
+  norm_sample_rate: 24000
