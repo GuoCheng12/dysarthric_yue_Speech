@@ -1,0 +1,3 @@
+method,target_preset,checkpoint_step,sample_count,zero_shot_cer,test_cer,delta_cer,zero_shot_critical_count,test_critical_count,test_critical_rate,hard_cer,hard_critical_count,medium_cer,medium_critical_count,easy_cer,easy_critical_count,summary_path
+current_default_scale025_step68,current_default,68,275,0.302886,0.214282,-0.088604,62,43,0.156364,0.55569,38,0.227528,5,0.049834,0,/data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_scale_sweep_1epoch/scale_0p25/eval_test_checkpoint_68/summary_by_group.csv
+decoder_only,decoder_only,68,275,0.302886,0.226799,-0.076086,62,43,0.156364,0.594879,37,0.24042,5,0.049885,1,/data/qwen3-asr/finetune/prompt_disjoint_v1/e3_lora_decoder_only_1epoch/decoder_only/eval_test_checkpoint_68/summary_by_group.csv

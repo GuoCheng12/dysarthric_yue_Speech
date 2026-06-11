@@ -1,0 +1,17 @@
+{
+  "split": "prompt_disjoint_v1",
+  "train_count": 2159,
+  "steps_per_epoch": 68,
+  "total_steps": 68,
+  "presets": [
+    "decoder_only"
+  ],
+  "lora_rank": 16,
+  "lora_scale": 0.25,
+  "lora_alpha": 4.0,
+  "lora_dropout": 0.05,
+  "learning_rate": 0.0002,
+  "epochs": 1.0,
+  "batch_size": 1,
+  "grad_acc": 32
+}
