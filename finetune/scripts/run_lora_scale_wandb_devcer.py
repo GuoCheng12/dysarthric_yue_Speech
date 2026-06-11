@@ -36,6 +36,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--lora-rank", type=int, default=16)
     p.add_argument("--lora-scale", type=float, default=0.25)
     p.add_argument("--lora-dropout", type=float, default=0.05)
+    p.add_argument("--lora-target-preset", default="current_default")
+    p.add_argument(
+        "--lora-target-modules",
+        default="",
+        help="Optional comma-separated explicit target module list. Overrides the preset.",
+    )
     p.add_argument("--lr", type=float, default=2e-4)
     p.add_argument("--epochs", type=float, default=2)
     p.add_argument("--batch-size", type=int, default=1)
@@ -45,6 +51,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--eval-batch-size", type=int, default=8)
     p.add_argument("--max-new-tokens", type=int, default=256)
     p.add_argument("--wandb-run-id", default="")
+    p.add_argument(
+        "--skip-training",
+        type=int,
+        default=0,
+        help="Set to 1 to evaluate existing checkpoints without launching training.",
+    )
     return p.parse_args()
 
 
@@ -115,6 +127,8 @@ def main() -> None:
         "lora_scale": args.lora_scale,
         "lora_alpha": args.lora_rank * args.lora_scale,
         "lora_dropout": args.lora_dropout,
+        "lora_target_preset": args.lora_target_preset,
+        "lora_target_modules": args.lora_target_modules,
         "learning_rate": args.lr,
         "epochs": args.epochs,
         "batch_size": args.batch_size,
@@ -166,12 +180,19 @@ def main() -> None:
         str(args.lora_scale),
         "--lora_dropout",
         str(args.lora_dropout),
+        "--lora_target_preset",
+        args.lora_target_preset,
         "--report_to",
         "wandb",
         "--run_name",
         args.run_name,
     ]
-    run_cmd(train_cmd, output_dir / "train.log", env)
+    if args.lora_target_modules:
+        train_cmd.extend(["--lora_target_modules", args.lora_target_modules])
+    if args.skip_training == 1:
+        print("[skip-training] Reusing existing checkpoints and running dev CER only.", flush=True)
+    else:
+        run_cmd(train_cmd, output_dir / "train.log", env)
 
     run = wandb.init(project=args.project, id=run_id, resume="allow", name=args.run_name, config=config)
     eval_rows: list[dict[str, object]] = []

@@ -28,6 +28,35 @@ Use one setting first:
 Rank 16 is the first choice because rank 8 may under-adapt and rank 32 is closer
 to a stronger adaptation. If rank 16 underfits or overfits, sweep 8 and 32 next.
 
+## Target-Module Presets
+
+The LoRA entrypoint supports `--lora_target_preset`. A non-empty
+`--lora_target_modules` overrides the preset for one-off module lists.
+
+Available presets:
+
+| preset | target area | purpose |
+|---|---|---|
+| `current_default` | audio q/k/v plus decoder q/k/v/o and MLP projections | backwards-compatible default used by earlier LoRA runs |
+| `decoder_only` | text decoder q/k/v/o and MLP projections | isolate language-side adaptation |
+| `audio_projector` | `thinker.audio_tower.proj1`, `proj2` | smallest audio-to-text bridge adaptation |
+| `audio_adapter_convout_proj` | `conv_out`, `proj1`, `proj2` | CNN-output adapter plus projector |
+| `audio_attn_qkv` | audio encoder attention q/k/v | audio attention input projections only |
+| `audio_attn_qkvo` | audio encoder attention q/k/v/out | full audio attention projections |
+| `audio_ffn` | audio encoder `fc1`, `fc2` | audio encoder feed-forward blocks |
+| `audio_encoder_all` | all linear layers inside audio encoder layers | full AuT encoder LoRA, excluding final projector |
+| `audio_tower_all` | all linear layers under `thinker.audio_tower` | full AuT encoder plus adapter/projector |
+
+For prompt-disjoint follow-up experiments, use the audio-side order:
+
+1. `audio_projector`
+2. `audio_adapter_convout_proj`
+3. `audio_attn_qkvo`
+4. `audio_tower_all`
+
+This order starts from the smallest change to the audio-text interface, then
+expands into the AuT encoder only if the bridge-only adaptation is too weak.
+
 ## Remote Dependency
 
 Install PEFT in the training environment before running:

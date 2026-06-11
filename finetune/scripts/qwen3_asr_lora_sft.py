@@ -23,6 +23,7 @@ from qwen3_asr_sft import (  # noqa: E402
     CastFloatInputsTrainer,
     DataCollatorForQwen3ASRFinetuning,
     MakeEveryCheckpointInferableCallback,
+    copy_required_hf_files_for_qwen_asr,
     find_latest_checkpoint,
     make_preprocess_fn_prefix_only,
     patch_outer_forward,
@@ -38,6 +39,29 @@ except ImportError as exc:  # pragma: no cover
 
 
 DEFAULT_TARGET_MODULES = "q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj"
+TEXT_DECODER_PREFIX = "thinker.model.layers."
+AUDIO_TOWER_PREFIX = "thinker.audio_tower."
+AUDIO_ENCODER_PREFIX = "thinker.audio_tower.layers."
+AUDIO_PROJECTOR_MODULES = (
+    "thinker.audio_tower.proj1",
+    "thinker.audio_tower.proj2",
+)
+AUDIO_ADAPTER_CONVOUT_PROJECTOR_MODULES = (
+    "thinker.audio_tower.conv_out",
+    "thinker.audio_tower.proj1",
+    "thinker.audio_tower.proj2",
+)
+LORA_TARGET_PRESETS = (
+    "current_default",
+    "decoder_only",
+    "audio_projector",
+    "audio_adapter_convout_proj",
+    "audio_attn_qkv",
+    "audio_attn_qkvo",
+    "audio_ffn",
+    "audio_encoder_all",
+    "audio_tower_all",
+)
 
 
 def parse_args():
@@ -83,7 +107,17 @@ def parse_args():
         help="Optional LoRA scaling lambda. When set, lora_alpha = lora_rank * lora_scale.",
     )
     p.add_argument("--lora_dropout", type=float, default=0.05)
-    p.add_argument("--lora_target_modules", type=str, default=DEFAULT_TARGET_MODULES)
+    p.add_argument(
+        "--lora_target_preset",
+        type=str,
+        default="current_default",
+        choices=LORA_TARGET_PRESETS,
+        help=(
+            "Preset for LoRA target modules. Use --lora_target_modules to "
+            "override with an explicit comma-separated module list."
+        ),
+    )
+    p.add_argument("--lora_target_modules", type=str, default="")
     p.add_argument("--lora_bias", type=str, default="none", choices=["none", "all", "lora_only"])
     p.add_argument("--dry_run_model_setup", type=int, default=0)
 
@@ -92,16 +126,80 @@ def parse_args():
 
 def parse_target_modules(value: str):
     value = (value or "").strip()
-    if not value:
-        return DEFAULT_TARGET_MODULES.split(",")
     if value == "all-linear":
         return "all-linear"
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
-def count_targeted_linear_modules(model, target_modules):
+def linear_module_names(model):
+    return [name for name, module in model.named_modules() if isinstance(module, torch.nn.Linear)]
+
+
+def ends_any(name: str, suffixes: list[str] | tuple[str, ...]) -> bool:
+    return any(name.endswith(suffix) for suffix in suffixes)
+
+
+def require_exact_linear_modules(model, names: list[str]) -> list[str]:
+    linear_names = set(linear_module_names(model))
+    missing = [name for name in names if name not in linear_names]
+    if missing:
+        raise RuntimeError(f"Preset resolved missing Linear module(s): {missing}")
+    return names
+
+
+def expand_target_preset(model, preset: str):
+    linear_names = linear_module_names(model)
+    default_suffixes = DEFAULT_TARGET_MODULES.split(",")
+
+    if preset == "current_default":
+        return default_suffixes
+    if preset == "decoder_only":
+        return [
+            name
+            for name in linear_names
+            if name.startswith(TEXT_DECODER_PREFIX) and ends_any(name, default_suffixes)
+        ]
+    if preset == "audio_projector":
+        return require_exact_linear_modules(model, list(AUDIO_PROJECTOR_MODULES))
+    if preset == "audio_adapter_convout_proj":
+        return require_exact_linear_modules(model, list(AUDIO_ADAPTER_CONVOUT_PROJECTOR_MODULES))
+    if preset == "audio_attn_qkv":
+        return [
+            name
+            for name in linear_names
+            if name.startswith(AUDIO_ENCODER_PREFIX) and ends_any(name, ("q_proj", "k_proj", "v_proj"))
+        ]
+    if preset == "audio_attn_qkvo":
+        return [
+            name
+            for name in linear_names
+            if name.startswith(AUDIO_ENCODER_PREFIX)
+            and ends_any(name, ("q_proj", "k_proj", "v_proj", "out_proj"))
+        ]
+    if preset == "audio_ffn":
+        return [
+            name
+            for name in linear_names
+            if name.startswith(AUDIO_ENCODER_PREFIX) and ends_any(name, ("fc1", "fc2"))
+        ]
+    if preset == "audio_encoder_all":
+        return [name for name in linear_names if name.startswith(AUDIO_ENCODER_PREFIX)]
+    if preset == "audio_tower_all":
+        return [name for name in linear_names if name.startswith(AUDIO_TOWER_PREFIX)]
+
+    raise ValueError(f"Unknown LoRA target preset: {preset}")
+
+
+def resolve_target_modules(model, preset: str, custom_modules: str):
+    custom_modules = (custom_modules or "").strip()
+    if custom_modules:
+        return parse_target_modules(custom_modules), True
+    return expand_target_preset(model, preset), False
+
+
+def list_targeted_linear_modules(model, target_modules):
     if target_modules == "all-linear":
-        return sum(1 for _, m in model.named_modules() if isinstance(m, torch.nn.Linear))
+        return linear_module_names(model)
 
     matched = []
     for name, module in model.named_modules():
@@ -109,10 +207,18 @@ def count_targeted_linear_modules(model, target_modules):
             continue
         if any(name.endswith(target) for target in target_modules):
             matched.append(name)
-    return len(matched)
+    return matched
 
 
-def write_lora_metadata(path: Path, args, target_modules, matched_count, model):
+def format_target_modules_for_log(target_modules):
+    if target_modules == "all-linear":
+        return "all-linear"
+    if len(target_modules) <= 24:
+        return target_modules
+    return target_modules[:24] + [f"... ({len(target_modules) - 24} more)"]
+
+
+def write_lora_metadata(path: Path, args, target_modules, custom_target_modules, matched_modules, model):
     path.mkdir(parents=True, exist_ok=True)
     trainable = 0
     total = 0
@@ -131,8 +237,11 @@ def write_lora_metadata(path: Path, args, target_modules, matched_count, model):
         "lora_scale": args.lora_alpha / args.lora_rank,
         "lora_dropout": args.lora_dropout,
         "lora_bias": args.lora_bias,
+        "lora_target_preset": args.lora_target_preset,
+        "lora_target_custom": custom_target_modules,
         "lora_target_modules": target_modules,
-        "matched_linear_module_count": matched_count,
+        "matched_linear_module_count": len(matched_modules),
+        "matched_linear_modules": matched_modules,
         "trainable_parameters": trainable,
         "total_parameters": total,
         "trainable_ratio": trainable / total if total else None,
@@ -166,13 +275,16 @@ def main():
     if hasattr(model, "config"):
         model.config.use_cache = False
 
-    target_modules = parse_target_modules(args.lora_target_modules)
-    matched_count = count_targeted_linear_modules(model, target_modules)
-    if matched_count == 0:
+    target_modules, custom_target_modules = resolve_target_modules(
+        model, args.lora_target_preset, args.lora_target_modules
+    )
+    matched_modules = list_targeted_linear_modules(model, target_modules)
+    if not matched_modules:
         raise RuntimeError(
             "LoRA target modules matched 0 Linear layers. "
             f"Requested target_modules={target_modules!r}. "
-            "Try --lora_target_modules all-linear or inspect model.named_modules()."
+            "Try another --lora_target_preset, --lora_target_modules all-linear, "
+            "or inspect model.named_modules()."
         )
 
     lora_config = LoraConfig(
@@ -185,9 +297,18 @@ def main():
     model = get_peft_model(model, lora_config)
     if hasattr(model, "print_trainable_parameters"):
         model.print_trainable_parameters()
-    write_lora_metadata(Path(args.output_dir), args, target_modules, matched_count, model)
-    print(f"[lora] target_modules={target_modules}")
-    print(f"[lora] matched_linear_module_count={matched_count}")
+    write_lora_metadata(
+        Path(args.output_dir),
+        args,
+        target_modules,
+        custom_target_modules,
+        matched_modules,
+        model,
+    )
+    print(f"[lora] target_preset={args.lora_target_preset}")
+    print(f"[lora] custom_target_modules={custom_target_modules}")
+    print(f"[lora] target_modules={format_target_modules_for_log(target_modules)}")
+    print(f"[lora] matched_linear_module_count={len(matched_modules)}")
     print(f"[lora] metadata={Path(args.output_dir) / 'lora_run_metadata.json'}")
     if args.dry_run_model_setup == 1:
         print("[dry_run_model_setup] LoRA model setup succeeded; exiting before dataset/training.")
