@@ -15,10 +15,19 @@ Demo status:
 - Demo size: 6 pairs
 - Split coverage: train/dev/test = 2/2/2
 - Real dysarthric side: existing cleaned read-sentence patient audio
-- Normal TTS side: Cantonese CosyVoice2 model, cached zero-shot speaker
-- TTS model: `ASLP-lab/Cosyvoice2-Yue`
-- CosyVoice code: `/data/qwen3-asr/third_party/CosyVoice`
-- Remote output root: `/data/qwen3-asr/synthesis/dsi_v1/pair_demo`
+- Normal TTS side: Microsoft Edge neural TTS Hong Kong Cantonese voice
+- TTS backend: `edge-tts`
+- TTS voice: `zh-HK-HiuGaaiNeural`
+- Remote output root: `/data/qwen3-asr/synthesis/dsi_v1/pair_demo_v2_edge`
+- Status: accepted as pair-data demo after ASR sanity check
+
+Rejected earlier attempts:
+
+- `/data/qwen3-asr/synthesis/dsi_v1/pair_demo`: CosyVoice2 cached speaker demo.
+  User listening check found the audio unusable.
+- `/data/qwen3-asr/synthesis/dsi_v1/pair_demo_ab_test`: local TTS A/B scratch
+  outputs. CosyVoice and VITS candidates were rejected because Qwen3-ASR
+  readback showed severe content mismatch.
 
 The private generated manifest contains patient text and absolute audio paths,
 so it is not committed. See `private_manifest.yaml`.
@@ -40,17 +49,14 @@ python synthesis/dsi_v1/scripts/prepare_pair_demo_manifest.py \
   --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl \
   --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl \
   --per-split 2 \
-  --tts-root /data/qwen3-asr/synthesis/dsi_v1/pair_demo/norm_tts_wav \
-  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_demo/pair_demo_manifest.csv \
-  --out-jsonl /data/qwen3-asr/synthesis/dsi_v1/pair_demo/pair_demo_manifest.jsonl
+  --tts-root /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v2_edge/norm_tts_wav \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v2_edge/pair_demo_manifest.csv \
+  --out-jsonl /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v2_edge/pair_demo_manifest.jsonl
 
-python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
-  --pair-manifest /data/qwen3-asr/synthesis/dsi_v1/pair_demo/pair_demo_manifest.csv \
-  --cosyvoice-repo /data/qwen3-asr/third_party/CosyVoice \
-  --model-dir /data/qwen3-asr/models/tts/Cosyvoice2-Yue \
-  --mode cached_zero_shot \
-  --speaker-id my_zero_shot_spk \
-  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_demo/pair_demo_manifest.generated.csv
+python synthesis/dsi_v1/scripts/generate_edge_tts_demo_pairs.py \
+  --pair-manifest /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v2_edge/pair_demo_manifest.csv \
+  --voice zh-HK-HiuGaaiNeural \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v2_edge/pair_demo_manifest.generated.csv
 ```
 
 ## Notes
