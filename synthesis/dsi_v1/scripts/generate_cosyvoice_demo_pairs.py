@@ -8,6 +8,7 @@ import csv
 import json
 import sys
 import time
+from importlib import metadata
 from pathlib import Path
 
 import torch
@@ -19,6 +20,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pair-manifest", required=True)
     parser.add_argument("--out-csv", required=True)
     parser.add_argument("--cosyvoice-repo", required=True)
+    parser.add_argument(
+        "--pythonpath-prepend",
+        action="append",
+        default=[],
+        help="Extra import path to prepend before importing CosyVoice; useful for dependency overlays.",
+    )
     parser.add_argument("--model-dir", required=True)
     parser.add_argument("--mode", choices=["cached_zero_shot", "sft", "instruct2"], default="cached_zero_shot")
     parser.add_argument("--speaker-id", default="my_zero_shot_spk")
@@ -30,6 +37,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--instruction",
         default="You are a helpful assistant. 请用广东话表达。<|endofprompt|>",
+    )
+    parser.add_argument(
+        "--text-frontend",
+        choices=["true", "false"],
+        default="false",
+        help="Whether to run CosyVoice text normalization. Use false for already-clean Cantonese prompts.",
     )
     parser.add_argument("--limit", type=int, default=0, help="Optional max number of rows to synthesize.")
     parser.add_argument("--overwrite", action="store_true")
@@ -50,13 +63,22 @@ def write_csv(path: Path, rows: list[dict[str, str]]) -> None:
         writer.writerows(rows)
 
 
-def import_cosyvoice(cosyvoice_repo: Path):
+def import_cosyvoice(cosyvoice_repo: Path, pythonpath_prepend: list[str]):
     matcha = cosyvoice_repo / "third_party" / "Matcha-TTS"
-    sys.path.insert(0, str(cosyvoice_repo))
-    sys.path.insert(0, str(matcha))
-    from cosyvoice.cli.cosyvoice import AutoModel  # noqa: PLC0415
+    for path in reversed([*pythonpath_prepend, str(cosyvoice_repo), str(matcha)]):
+        if path:
+            sys.path.insert(0, path)
+    from cosyvoice.cli.cosyvoice import CosyVoice2  # noqa: PLC0415
+    from cosyvoice.utils.file_utils import load_wav  # noqa: PLC0415
 
-    return AutoModel
+    return CosyVoice2, load_wav
+
+
+def package_version(name: str) -> str:
+    try:
+        return metadata.version(name)
+    except metadata.PackageNotFoundError:
+        return ""
 
 
 def concat_outputs(outputs: list[dict[str, torch.Tensor]]) -> torch.Tensor:
@@ -79,8 +101,18 @@ def main() -> None:
     if args.mode == "instruct2" and (prompt_wav is None or not prompt_wav.exists()):
         raise FileNotFoundError("--prompt-wav is required for mode=instruct2")
 
-    AutoModel = import_cosyvoice(Path(args.cosyvoice_repo))
-    model = AutoModel(model_dir=args.model_dir, fp16=args.fp16)
+    text_frontend = args.text_frontend == "true"
+    CosyVoice2, load_wav = import_cosyvoice(Path(args.cosyvoice_repo), args.pythonpath_prepend)
+    model = CosyVoice2(
+        args.model_dir,
+        load_jit=False,
+        load_trt=False,
+        load_vllm=False,
+        fp16=args.fp16,
+    )
+    prompt_speech_16k = load_wav(str(prompt_wav), 16000) if prompt_wav is not None else None
+    transformers_version = package_version("transformers")
+    tokenizers_version = package_version("tokenizers")
 
     generated_rows: list[dict[str, str]] = []
     for idx, row in enumerate(rows, start=1):
@@ -99,7 +131,7 @@ def main() -> None:
                         "",
                         zero_shot_spk_id=args.speaker_id,
                         stream=False,
-                        text_frontend=True,
+                        text_frontend=text_frontend,
                     )
                 )
             elif args.mode == "sft":
@@ -108,17 +140,19 @@ def main() -> None:
                         text,
                         args.speaker_id,
                         stream=False,
-                        text_frontend=True,
+                        text_frontend=text_frontend,
                     )
                 )
             else:
+                if prompt_speech_16k is None:
+                    raise RuntimeError("--prompt-wav is required for mode=instruct2")
                 outputs = list(
                     model.inference_instruct2(
                         text,
                         args.instruction,
-                        str(prompt_wav),
+                        prompt_speech_16k,
                         stream=False,
-                        text_frontend=True,
+                        text_frontend=text_frontend,
                     )
                 )
             speech = concat_outputs(outputs)
@@ -134,6 +168,9 @@ def main() -> None:
             "tts_instruction": args.instruction,
             "tts_prompt_wav": str(prompt_wav or ""),
             "tts_prompt_text": args.prompt_text,
+            "tts_text_frontend": str(text_frontend),
+            "tts_transformers_version": transformers_version,
+            "tts_tokenizers_version": tokenizers_version,
             "norm_sample_rate": str(wav_info.sample_rate),
             "norm_num_frames": str(wav_info.num_frames),
             "norm_duration": f"{wav_info.num_frames / wav_info.sample_rate:.6f}",

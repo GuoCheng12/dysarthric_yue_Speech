@@ -53,3 +53,27 @@ python synthesis/dsi_v1/scripts/generate_edge_tts_demo_pairs.py \
 
 The generated audio and private manifests stay outside Git. Public records can
 store aggregate counts, commands, model choice, and checksum summaries.
+
+## CosyVoice Compatibility Note
+
+CosyVoice2-Yue needs the WenetSpeech-Yue Space code path and a compatible
+`transformers/tokenizers` pair. The current Qwen-ASR environment has newer
+packages that made CosyVoice2 produce long, repeated, content-mismatched audio.
+The repaired route is:
+
+```bash
+python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
+  --pair-manifest /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v3_cosyvoice_compat/pair_demo_manifest.csv \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v3_cosyvoice_compat/pair_demo_manifest.generated.csv \
+  --cosyvoice-repo /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git \
+  --pythonpath-prepend /data/qwen3-asr/overlays/cosyvoice-transformers451 \
+  --model-dir /data/qwen3-asr/models/tts/WSYue-TTS/CosyVoice2-Yue-ZoengJyutGaai/CosyVoice2-yue-zjg \
+  --mode instruct2 \
+  --prompt-wav /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/sg_017_090.wav \
+  --instruction "用粤语说这句话" \
+  --text-frontend false
+```
+
+The compatibility overlay only contains Python packages, not model weights.
+Keep Qwen-ASR validation results beside the private generated manifest before
+using CosyVoice-normal audio for downstream residual-generator experiments.

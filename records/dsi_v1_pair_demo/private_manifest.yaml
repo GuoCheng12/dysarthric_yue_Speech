@@ -29,3 +29,35 @@ rejected_roots:
     reason: user_listening_check_unusable
   - root: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_ab_test
     reason: tts_ablation_scratch_rejected_by_asr_readback
+cosyvoice_compat_retest:
+  status: usable_with_caveat
+  remote_root: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v3_cosyvoice_compat
+  pair_manifest_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v3_cosyvoice_compat/pair_demo_manifest.csv
+  pair_manifest_sha256: c815eeffe4d6d3e08fa0f2ee331a5eef952b5cb56ae98cbb2faa077e28bb7f21
+  generated_pair_manifest_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v3_cosyvoice_compat/pair_demo_manifest.generated.csv
+  generated_pair_manifest_sha256: 317c3636a513ce00d106610f63540b795908b2c6e3750189d773e7448499781f
+  asr_validation_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v3_cosyvoice_compat/asr_validation.csv
+  asr_validation_sha256: 9b6a597905570ecd9deb6d2ef9f682e8865c6517e1eaf3f2ed42cad4e701ca3e
+  normal_tts_wav_root: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v3_cosyvoice_compat/norm_tts_wav
+  tts_model:
+    backend: cosyvoice2
+    model: ASLP-lab/Cosyvoice2-Yue-ZoengJyutGaai
+    local_model_dir: /data/qwen3-asr/models/tts/WSYue-TTS/CosyVoice2-Yue-ZoengJyutGaai/CosyVoice2-yue-zjg
+    code_dir: /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git
+    python_overlay: /data/qwen3-asr/overlays/cosyvoice-transformers451
+    transformers_version: 4.51.3
+    tokenizers_version: 0.21.4
+    text_frontend: false
+    instruction: 用粤语说这句话
+  validation:
+    pair_count: 6
+    norm_wav_exists: 6
+    dys_wav_exists: 6
+    norm_sample_rate: 24000
+    avg_tts_textnorm_cer: 0.220085
+    critical_error_count: 0
+    critical_error_rate: 0.0
+    asr_sanity_check: passed_noncritical_with_homophone_drift
+  diagnosis:
+    root_cause: incompatible_transformers_tokenizers_and_wrong_instruct2_prompt_type
+    fixed_by: official_space_code_prompt_tensor_and_transformers451_overlay
