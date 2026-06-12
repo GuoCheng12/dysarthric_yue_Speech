@@ -27,6 +27,12 @@ def parse_args() -> argparse.Namespace:
         help="Extra import path to prepend before importing CosyVoice; useful for dependency overlays.",
     )
     parser.add_argument("--model-dir", required=True)
+    parser.add_argument(
+        "--model-family",
+        choices=["cosyvoice2", "cosyvoice3", "auto"],
+        default="cosyvoice2",
+        help="CosyVoice model wrapper to instantiate. Keep cosyvoice2 as default for existing runs.",
+    )
     parser.add_argument("--mode", choices=["cached_zero_shot", "sft", "instruct2"], default="cached_zero_shot")
     parser.add_argument("--speaker-id", default="my_zero_shot_spk")
     parser.add_argument("--prompt-wav", default="")
@@ -87,10 +93,31 @@ def import_cosyvoice(cosyvoice_repo: Path, pythonpath_prepend: list[str]):
     for path in reversed([*pythonpath_prepend, str(cosyvoice_repo), str(matcha)]):
         if path:
             sys.path.insert(0, path)
-    from cosyvoice.cli.cosyvoice import CosyVoice2  # noqa: PLC0415
+    from cosyvoice.cli.cosyvoice import AutoModel, CosyVoice2, CosyVoice3  # noqa: PLC0415
     from cosyvoice.utils.file_utils import load_wav  # noqa: PLC0415
 
-    return CosyVoice2, load_wav
+    return AutoModel, CosyVoice2, CosyVoice3, load_wav
+
+
+def instantiate_model(
+    model_family: str,
+    model_dir: str,
+    fp16: bool,
+    auto_model,
+    cosyvoice2_cls,
+    cosyvoice3_cls,
+):
+    common_kwargs = {
+        "model_dir": model_dir,
+        "load_trt": False,
+        "load_vllm": False,
+        "fp16": fp16,
+    }
+    if model_family == "cosyvoice2":
+        return cosyvoice2_cls(load_jit=False, **common_kwargs)
+    if model_family == "cosyvoice3":
+        return cosyvoice3_cls(**common_kwargs)
+    return auto_model(**common_kwargs)
 
 
 def package_version(name: str) -> str:
@@ -147,15 +174,14 @@ def main() -> None:
         raise FileNotFoundError("--prompt-wav is required for mode=instruct2")
 
     text_frontend = args.text_frontend == "true"
-    CosyVoice2, load_wav = import_cosyvoice(Path(args.cosyvoice_repo), args.pythonpath_prepend)
-    model = CosyVoice2(
-        args.model_dir,
-        load_jit=False,
-        load_trt=False,
-        load_vllm=False,
-        fp16=args.fp16,
-    )
-    prompt_speech_16k = load_wav(str(prompt_wav), 16000) if prompt_wav is not None else None
+    AutoModel, CosyVoice2, CosyVoice3, load_wav = import_cosyvoice(Path(args.cosyvoice_repo), args.pythonpath_prepend)
+    model = instantiate_model(args.model_family, args.model_dir, args.fp16, AutoModel, CosyVoice2, CosyVoice3)
+    prompt_speech_input = None
+    if prompt_wav is not None:
+        if args.model_family == "cosyvoice2":
+            prompt_speech_input = load_wav(str(prompt_wav), 16000)
+        else:
+            prompt_speech_input = str(prompt_wav)
     transformers_version = package_version("transformers")
     tokenizers_version = package_version("tokenizers")
 
@@ -191,13 +217,13 @@ def main() -> None:
                     )
                 )
             else:
-                if prompt_speech_16k is None:
+                if prompt_speech_input is None:
                     raise RuntimeError("--prompt-wav is required for mode=instruct2")
                 outputs = list(
                     model.inference_instruct2(
                         text,
                         args.instruction,
-                        prompt_speech_16k,
+                        prompt_speech_input,
                         stream=False,
                         text_frontend=text_frontend,
                         speed=args.speed,
@@ -221,6 +247,7 @@ def main() -> None:
         row = {
             **row,
             "tts_model": Path(args.model_dir).name,
+            "tts_model_family": args.model_family,
             "tts_mode": args.mode,
             "tts_speaker_id": args.speaker_id,
             "tts_instruction": args.instruction,

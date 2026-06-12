@@ -10,3 +10,4 @@ pandas
 peft
 pycantonese
 edge-tts
+x-transformers==2.11.24

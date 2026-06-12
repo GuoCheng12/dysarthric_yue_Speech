@@ -1,0 +1,5 @@
+split,pair_count,unique_patient_count,avg_norm_duration,norm_sample_rate,avg_rms_dbfs,avg_tts_textnorm_cer,critical_error_count,critical_error_rate,compare_to_v5_avg_cer_delta
+train,2,2,4.050,16000,-23.000001,0.138889,0,0.000000,-0.055556
+dev,2,2,4.130,16000,-23.000000,0.153846,0,0.000000,-0.055556
+test,2,2,3.170,16000,-23.000001,0.055556,0,0.000000,-0.055556
+overall,6,5,3.783,16000,-23.000001,0.116097,0,0.000000,-0.055556
