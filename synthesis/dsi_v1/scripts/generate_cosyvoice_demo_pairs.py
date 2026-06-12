@@ -46,6 +46,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--limit", type=int, default=0, help="Optional max number of rows to synthesize.")
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument(
+        "--flush-every",
+        type=int,
+        default=1,
+        help="Write the output CSV every N processed rows so long runs are resumable.",
+    )
     parser.add_argument("--fp16", action="store_true", help="Enable CosyVoice fp16 inference.")
     parser.add_argument("--speed", type=float, default=1.0, help="CosyVoice speech speed multiplier.")
     parser.add_argument(
@@ -236,6 +242,8 @@ def main() -> None:
         }
         generated_rows.append(row)
         print(json.dumps({"idx": idx, "utt_id": row["utt_id"], "status": status, "wav": str(out_wav)}, ensure_ascii=False), flush=True)
+        if args.flush_every > 0 and len(generated_rows) % args.flush_every == 0:
+            write_csv(Path(args.out_csv), generated_rows)
 
     write_csv(Path(args.out_csv), generated_rows)
 

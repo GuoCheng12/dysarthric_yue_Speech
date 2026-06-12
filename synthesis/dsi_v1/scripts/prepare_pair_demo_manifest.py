@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a small prompt-disjoint pair-data manifest for DSI V1 demos."""
+"""Build prompt-disjoint pair-data manifests for DSI V1."""
 
 from __future__ import annotations
 
@@ -32,6 +32,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out-jsonl", required=True)
     parser.add_argument("--tts-root", required=True)
     parser.add_argument("--per-split", type=int, default=2)
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Use every input row instead of sampling per split.",
+    )
     parser.add_argument("--seed", type=int, default=20260612)
     parser.add_argument(
         "--prefer-buckets",
@@ -102,6 +107,14 @@ def pick_demo_rows(rows: list[dict[str, Any]], per_split: int, seed: int, prefer
     return picked
 
 
+def pick_all_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    missing_audio = [str(row["utt_id"]) for row in rows if not Path(str(row["audio"])).exists()]
+    if missing_audio:
+        preview = ", ".join(missing_audio[:10])
+        raise FileNotFoundError(f"{len(missing_audio)} rows have missing audio. First rows: {preview}")
+    return sorted(rows, key=lambda row: (str(row["split"]), str(row["speaker_id"]), str(row["utt_id"])))
+
+
 def build_pair_rows(rows: list[dict[str, Any]], tts_root: Path) -> list[dict[str, str]]:
     out: list[dict[str, str]] = []
     for row in rows:
@@ -148,7 +161,7 @@ def main() -> None:
         all_rows.extend(read_jsonl(Path(item)))
 
     prefer_buckets = [x.strip() for x in args.prefer_buckets.split(",") if x.strip()]
-    picked = pick_demo_rows(all_rows, args.per_split, args.seed, prefer_buckets)
+    picked = pick_all_rows(all_rows) if args.all else pick_demo_rows(all_rows, args.per_split, args.seed, prefer_buckets)
     pair_rows = build_pair_rows(picked, Path(args.tts_root))
 
     write_csv(Path(args.out_csv), pair_rows)

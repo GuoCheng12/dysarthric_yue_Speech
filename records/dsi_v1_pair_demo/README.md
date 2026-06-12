@@ -160,6 +160,39 @@ python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
   --overwrite
 ```
 
+Full DSI V1 pair-data build uses the same setting with `--all`:
+
+```bash
+cd /data/qwen3-asr/repo/dysarthric_yue_Speech
+source /data/qwen3-asr/env.sh
+source /data/qwen3-asr/venvs/qwen3-asr/bin/activate
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy ALL_PROXY
+
+python synthesis/dsi_v1/scripts/prepare_pair_demo_manifest.py \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl \
+  --all \
+  --tts-root /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_tts_setting_v1/norm_tts_wav \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_tts_setting_v1/pair_manifest.csv \
+  --out-jsonl /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_tts_setting_v1/pair_manifest.jsonl
+
+python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
+  --pair-manifest /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_tts_setting_v1/pair_manifest.csv \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_tts_setting_v1/pair_manifest.generated.csv \
+  --cosyvoice-repo /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git \
+  --pythonpath-prepend /data/qwen3-asr/overlays/cosyvoice-transformers451 \
+  --model-dir /data/qwen3-asr/models/tts/Cosyvoice2-Yue \
+  --mode instruct2 \
+  --prompt-wav /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/F01_中立_20054.wav \
+  --instruction "用粤语说这句话" \
+  --text-frontend false \
+  --speed 0.9 \
+  --target-sample-rate 16000 \
+  --target-rms-dbfs -23.0 \
+  --flush-every 1
+```
+
 ## Notes
 
 This is only the pair-data demo gate. It does not yet run SSL feature
