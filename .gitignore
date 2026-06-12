@@ -23,6 +23,7 @@ artifacts/*
 !artifacts/registry/**
 cache/
 logs/
+wandb/
 tmp/
 outputs/
 inference/outputs/
