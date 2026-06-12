@@ -1,0 +1,40 @@
+setting_name: TTS setting V1 - CosyVoice3 replacement
+purpose: normal Cantonese TTS side for DSI V1 full pair data
+source_split: prompt_disjoint_v1
+remote_output_root: /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1
+remote_pair_manifest: /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/pair_manifest.csv
+pair_count: 2707
+split_counts:
+  train: 2159
+  dev: 273
+  test: 275
+unique_patient_count: 71
+backend:
+  code_repo: /data/qwen3-asr/third_party/CosyVoice
+  model: FunAudioLLM/Fun-CosyVoice3-0.5B-2512
+  model_dir: /data/qwen3-asr/models/tts/Fun-CosyVoice3-0.5B-2512
+  model_family: cosyvoice3
+  mode: instruct2
+  extra_dependency: x-transformers==2.11.24
+speech_setting:
+  language: Cantonese / Yue
+  speaker: fixed single high-quality speaker
+  prompt_wav: /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/F01_中立_20054.wav
+  gender: fixed, not critical in V1
+  style: neutral
+  emotion: none
+  instruction: "You are a helpful assistant. 请用粤语以中性语气、正常偏慢语速说这句话。<|endofprompt|>"
+  speed: 0.9
+  pitch: default
+  energy: default
+  text_frontend: false
+  sample_rate:
+    model_native: 24000
+    output: 16000
+  loudness:
+    target_rms_dbfs: -23.0
+  noise: none
+  reverb: none
+resumability:
+  flush_every: 1
+  overwrite: false

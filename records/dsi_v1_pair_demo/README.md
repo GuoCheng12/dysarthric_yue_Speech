@@ -63,6 +63,21 @@ CosyVoice3 comparison:
 - ASR sanity result: 6/6 non-critical, average TTS TextNorm_CER `0.116097`
 - Compared with TTS setting V1, average TTS TextNorm_CER changed by `-0.055556`
 
+CosyVoice3 full pair-data replacement:
+
+- Reason: user listening check found CosyVoice3 more natural on the held-out
+  test demo sentences, while CosyVoice2 sounded more Mandarin-like.
+- Old CosyVoice2 full output root
+  `/data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_tts_setting_v1` was stopped
+  and deleted.
+- New active full output root:
+  `/data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1`
+- Full pair count: 2707
+- Split coverage: train/dev/test = 2159/273/275
+- Unique patient count: 71
+- Config record: `cosyvoice3_tts_setting_v1.yaml`
+- Status: generation started as a resumable background run with `--flush-every 1`
+
 Rejected earlier attempts:
 
 - `/data/qwen3-asr/synthesis/dsi_v1/pair_demo`: CosyVoice2 cached speaker demo.
@@ -90,6 +105,9 @@ For the neutral V1 TTS setting, see `tts_setting_v1_public_summary.csv`.
 
 For the CosyVoice3 comparison, see
 `cosyvoice3_compare_public_summary.csv`.
+
+For the active CosyVoice3 full pair-data setting, see
+`cosyvoice3_tts_setting_v1.yaml`.
 
 ## Reproduction Commands
 
@@ -242,6 +260,40 @@ python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
   --target-sample-rate 16000 \
   --target-rms-dbfs -23.0 \
   --overwrite
+```
+
+CosyVoice3 full DSI V1 pair-data replacement:
+
+```bash
+cd /data/qwen3-asr/repo/dysarthric_yue_Speech
+source /data/qwen3-asr/env.sh
+source /data/qwen3-asr/venvs/qwen3-asr/bin/activate
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy ALL_PROXY
+
+python synthesis/dsi_v1/scripts/prepare_pair_demo_manifest.py \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl \
+  --all \
+  --tts-root /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/norm_tts_wav \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/pair_manifest.csv \
+  --out-jsonl /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/pair_manifest.jsonl
+
+python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
+  --pair-manifest /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/pair_manifest.csv \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/pair_manifest.generated.csv \
+  --cosyvoice-repo /data/qwen3-asr/third_party/CosyVoice \
+  --pythonpath-prepend /data/qwen3-asr/overlays/cosyvoice-transformers451 \
+  --model-dir /data/qwen3-asr/models/tts/Fun-CosyVoice3-0.5B-2512 \
+  --model-family cosyvoice3 \
+  --mode instruct2 \
+  --prompt-wav /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/F01_中立_20054.wav \
+  --instruction "You are a helpful assistant. 请用粤语以中性语气、正常偏慢语速说这句话。<|endofprompt|>" \
+  --text-frontend false \
+  --speed 0.9 \
+  --target-sample-rate 16000 \
+  --target-rms-dbfs -23.0 \
+  --flush-every 1
 ```
 
 ## Notes
