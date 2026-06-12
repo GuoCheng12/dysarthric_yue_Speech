@@ -47,6 +47,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=0, help="Optional max number of rows to synthesize.")
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--fp16", action="store_true", help="Enable CosyVoice fp16 inference.")
+    parser.add_argument("--speed", type=float, default=1.0, help="CosyVoice speech speed multiplier.")
+    parser.add_argument(
+        "--target-sample-rate",
+        type=int,
+        default=0,
+        help="Optional output sample rate after synthesis, e.g. 16000.",
+    )
+    parser.add_argument(
+        "--target-rms-dbfs",
+        type=float,
+        default=None,
+        help="Optional RMS loudness normalization target in dBFS, e.g. -23.0.",
+    )
     return parser.parse_args()
 
 
@@ -87,6 +100,32 @@ def concat_outputs(outputs: list[dict[str, torch.Tensor]]) -> torch.Tensor:
         raise RuntimeError("CosyVoice returned no speech chunks")
     speeches = [x if x.dim() == 2 else x.reshape(1, -1) for x in speeches]
     return torch.cat(speeches, dim=1)
+
+
+def rms_dbfs(speech: torch.Tensor) -> float:
+    rms = torch.sqrt(torch.mean(speech.float() ** 2)).clamp_min(1e-12)
+    return float(20.0 * torch.log10(rms))
+
+
+def postprocess_speech(
+    speech: torch.Tensor,
+    sample_rate: int,
+    target_sample_rate: int,
+    target_rms_dbfs: float | None,
+) -> tuple[torch.Tensor, int, float, float]:
+    if target_sample_rate > 0 and target_sample_rate != sample_rate:
+        speech = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=target_sample_rate)(speech)
+        sample_rate = target_sample_rate
+
+    if target_rms_dbfs is not None:
+        current_rms = torch.sqrt(torch.mean(speech.float() ** 2)).clamp_min(1e-12)
+        target_rms = 10 ** (target_rms_dbfs / 20.0)
+        speech = speech * (target_rms / current_rms)
+        peak = torch.max(torch.abs(speech)).clamp_min(1e-12)
+        if peak > 0.99:
+            speech = speech * (0.99 / peak)
+
+    return speech, sample_rate, rms_dbfs(speech), float(torch.max(torch.abs(speech)))
 
 
 def main() -> None:
@@ -132,6 +171,7 @@ def main() -> None:
                         zero_shot_spk_id=args.speaker_id,
                         stream=False,
                         text_frontend=text_frontend,
+                        speed=args.speed,
                     )
                 )
             elif args.mode == "sft":
@@ -141,6 +181,7 @@ def main() -> None:
                         args.speaker_id,
                         stream=False,
                         text_frontend=text_frontend,
+                        speed=args.speed,
                     )
                 )
             else:
@@ -153,11 +194,22 @@ def main() -> None:
                         prompt_speech_16k,
                         stream=False,
                         text_frontend=text_frontend,
+                        speed=args.speed,
                     )
                 )
             speech = concat_outputs(outputs)
-            torchaudio.save(str(out_wav), speech, model.sample_rate)
+            speech, save_sample_rate, output_rms_dbfs, output_peak = postprocess_speech(
+                speech,
+                model.sample_rate,
+                args.target_sample_rate,
+                args.target_rms_dbfs,
+            )
+            torchaudio.save(str(out_wav), speech, save_sample_rate)
             status = "generated"
+        else:
+            existing_speech, save_sample_rate = torchaudio.load(str(out_wav))
+            output_rms_dbfs = rms_dbfs(existing_speech)
+            output_peak = float(torch.max(torch.abs(existing_speech)))
 
         wav_info = torchaudio.info(str(out_wav))
         row = {
@@ -169,8 +221,13 @@ def main() -> None:
             "tts_prompt_wav": str(prompt_wav or ""),
             "tts_prompt_text": args.prompt_text,
             "tts_text_frontend": str(text_frontend),
+            "tts_speed": f"{args.speed:.6f}",
             "tts_transformers_version": transformers_version,
             "tts_tokenizers_version": tokenizers_version,
+            "postprocess_target_sample_rate": str(args.target_sample_rate or ""),
+            "postprocess_target_rms_dbfs": "" if args.target_rms_dbfs is None else f"{args.target_rms_dbfs:.6f}",
+            "postprocess_output_rms_dbfs": f"{output_rms_dbfs:.6f}",
+            "postprocess_output_peak": f"{output_peak:.6f}",
             "norm_sample_rate": str(wav_info.sample_rate),
             "norm_num_frames": str(wav_info.num_frames),
             "norm_duration": f"{wav_info.num_frames / wav_info.sample_rate:.6f}",

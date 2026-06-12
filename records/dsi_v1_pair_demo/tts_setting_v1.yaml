@@ -1,0 +1,36 @@
+name: tts_setting_v1
+purpose: normal_speech_reference_for_dsi_v1
+language: Cantonese/Yue
+speaker:
+  policy: fixed_single_high_quality_speaker
+  backend: cosyvoice2
+  model: ASLP-lab/Cosyvoice2-Yue
+  prompt_wav: /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/F01_中立_20054.wav
+  prompt_description: neutral_female_voice
+gender:
+  policy: fixed
+  value: female
+  note: not critical for V1, but held fixed to avoid adding another nuisance factor
+style: neutral
+emotion: none
+speed:
+  policy: normal_slow
+  value: 0.9
+pitch: default
+energy: default
+sample_rate:
+  synthesis_hz: 24000
+  final_hz: 16000
+loudness:
+  normalization: rms_dbfs
+  target_dbfs: -23.0
+noise: none
+reverb: none
+text_frontend: false
+instruction: 用粤语说这句话
+dependency_overlay:
+  path: /data/qwen3-asr/overlays/cosyvoice-transformers451
+  transformers: 4.51.3
+  tokenizers: 0.21.4
+privacy:
+  generated_private_manifest_contains_patient_text_and_absolute_audio_paths: true

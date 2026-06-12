@@ -33,6 +33,22 @@ CosyVoice compatibility retest:
   caveat visible because some short prompts still show homophone/word-choice
   drift such as `幫手包` -> `雙手抱` and `啤牌` -> `pair 牌`
 
+TTS setting V1:
+
+- Language: Cantonese/Yue
+- Speaker: fixed single high-quality neutral speaker
+- Backend/model: `ASLP-lab/Cosyvoice2-Yue`
+- Prompt: `F01_中立_20054.wav`
+- Style/emotion: neutral, no emotion control
+- Speed: `0.9`
+- Pitch/energy: default
+- Output sample rate: resampled to 16 kHz
+- Loudness: RMS-normalized to `-23 dBFS`
+- Noise/reverb: none
+- Config record: `tts_setting_v1.yaml`
+- Remote output root: `/data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1`
+- ASR sanity result: 6/6 non-critical, average TTS TextNorm_CER `0.171652`
+
 Rejected earlier attempts:
 
 - `/data/qwen3-asr/synthesis/dsi_v1/pair_demo`: CosyVoice2 cached speaker demo.
@@ -55,6 +71,8 @@ See `pair_demo_public_summary.csv`.
 
 For the CosyVoice compatibility retest, see
 `cosyvoice_compat_public_summary.csv`.
+
+For the neutral V1 TTS setting, see `tts_setting_v1_public_summary.csv`.
 
 ## Reproduction Commands
 
@@ -106,6 +124,39 @@ python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
   --prompt-wav /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/sg_017_090.wav \
   --instruction "用粤语说这句话" \
   --text-frontend false \
+  --overwrite
+```
+
+TTS setting V1 candidate:
+
+```bash
+cd /data/qwen3-asr/repo/dysarthric_yue_Speech
+source /data/qwen3-asr/env.sh
+source /data/qwen3-asr/venvs/qwen3-asr/bin/activate
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy ALL_PROXY
+
+python synthesis/dsi_v1/scripts/prepare_pair_demo_manifest.py \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_train.jsonl \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_dev.jsonl \
+  --input-jsonl /data/qwen3-asr/finetune/data_prompt_disjoint_v1/prompt_disjoint_test.jsonl \
+  --per-split 2 \
+  --tts-root /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/norm_tts_wav \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/pair_demo_manifest.csv \
+  --out-jsonl /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/pair_demo_manifest.jsonl
+
+python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
+  --pair-manifest /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/pair_demo_manifest.csv \
+  --out-csv /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/pair_demo_manifest.generated.csv \
+  --cosyvoice-repo /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git \
+  --pythonpath-prepend /data/qwen3-asr/overlays/cosyvoice-transformers451 \
+  --model-dir /data/qwen3-asr/models/tts/Cosyvoice2-Yue \
+  --mode instruct2 \
+  --prompt-wav /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/F01_中立_20054.wav \
+  --instruction "用粤语说这句话" \
+  --text-frontend false \
+  --speed 0.9 \
+  --target-sample-rate 16000 \
+  --target-rms-dbfs -23.0 \
   --overwrite
 ```
 

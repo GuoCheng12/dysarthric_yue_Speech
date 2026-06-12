@@ -61,3 +61,46 @@ cosyvoice_compat_retest:
   diagnosis:
     root_cause: incompatible_transformers_tokenizers_and_wrong_instruct2_prompt_type
     fixed_by: official_space_code_prompt_tensor_and_transformers451_overlay
+tts_setting_v1:
+  status: preferred_v1_candidate
+  remote_root: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1
+  pair_manifest_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/pair_demo_manifest.csv
+  pair_manifest_sha256: f9de9668ae25fa0eee6d0069a41721ab54d8e4e22f443d0ac411226110253b6e
+  generated_pair_manifest_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/pair_demo_manifest.generated.csv
+  generated_pair_manifest_sha256: 0cd6c9ada99b82e6900f5c53b1a2ad21256f5708f70086b507749fe4f53cab69
+  asr_validation_csv: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/asr_validation.csv
+  asr_validation_sha256: 2d9ee7aa6891dcc6c249e24f0ed0b2cb4cf024b2e40393c30678002dee316827
+  normal_tts_wav_root: /data/qwen3-asr/synthesis/dsi_v1/pair_demo_v5_tts_setting_v1/norm_tts_wav
+  tts_model:
+    backend: cosyvoice2
+    model: ASLP-lab/Cosyvoice2-Yue
+    local_model_dir: /data/qwen3-asr/models/tts/Cosyvoice2-Yue
+    code_dir: /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git
+    python_overlay: /data/qwen3-asr/overlays/cosyvoice-transformers451
+    transformers_version: 4.51.3
+    tokenizers_version: 0.21.4
+    speaker_policy: fixed_single_high_quality_speaker
+    prompt_wav: /data/qwen3-asr/third_party/WenetSpeech-Yue-TTS-code-git/asset/F01_中立_20054.wav
+    prompt_style: neutral
+    text_frontend: false
+    instruction: 用粤语说这句话
+    speed: 0.9
+    pitch: default
+    energy: default
+    emotion: none
+  postprocess:
+    target_sample_rate: 16000
+    loudness_normalization: rms_dbfs
+    target_rms_dbfs: -23.0
+    noise: none
+    reverb: none
+  validation:
+    pair_count: 6
+    norm_wav_exists: 6
+    dys_wav_exists: 6
+    norm_sample_rate: 16000
+    avg_rms_dbfs: -23.0
+    avg_tts_textnorm_cer: 0.171652
+    critical_error_count: 0
+    critical_error_rate: 0.0
+    asr_sanity_check: passed_noncritical

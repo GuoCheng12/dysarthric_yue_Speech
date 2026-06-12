@@ -77,3 +77,20 @@ python synthesis/dsi_v1/scripts/generate_cosyvoice_demo_pairs.py \
 The compatibility overlay only contains Python packages, not model weights.
 Keep Qwen-ASR validation results beside the private generated manifest before
 using CosyVoice-normal audio for downstream residual-generator experiments.
+
+## TTS Setting V1
+
+The first controlled normal-TTS setting for DSI uses one fixed neutral Cantonese
+speaker and removes nuisance variation before residual modeling:
+
+- `ASLP-lab/Cosyvoice2-Yue`
+- prompt wav `F01_中立_20054.wav`
+- instruction `用粤语说这句话`
+- text frontend disabled because `clean_text` is already normalized Cantonese
+- speed `0.9`
+- resample to 16 kHz
+- RMS-normalize to `-23 dBFS`
+- no noise, reverb, pitch, emotion, or energy augmentation
+
+The TTS-side audio should be treated as the normal reference only after ASR
+readback validation passes the non-critical gate.
