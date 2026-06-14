@@ -78,6 +78,21 @@ CosyVoice3 full pair-data replacement:
 - Config record: `cosyvoice3_tts_setting_v1.yaml`
 - Status: generation started as a resumable background run with `--flush-every 1`
 
+CosyVoice3 full pair-data QA:
+
+- QA root: `/data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/qa_step_a`
+- Checked rows: 2707/2707
+- Checked wavs: 2707/2707
+- Error count: 0
+- Warning count: 0
+- Sample rate: all 16 kHz
+- RMS loudness: mean `-23.000000 dBFS`
+- Duration range: `0.92` to `10.70` seconds
+- Peak range: `0.268463` to `0.955048`
+- Private listening sample list:
+  `/data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/qa_step_a/listening_samples.csv`
+- Public summary: `cosyvoice3_full_qa_public_summary.csv`
+
 Rejected earlier attempts:
 
 - `/data/qwen3-asr/synthesis/dsi_v1/pair_demo`: CosyVoice2 cached speaker demo.
@@ -108,6 +123,9 @@ For the CosyVoice3 comparison, see
 
 For the active CosyVoice3 full pair-data setting, see
 `cosyvoice3_tts_setting_v1.yaml`.
+
+For the full CosyVoice3 QA result, see
+`cosyvoice3_full_qa_public_summary.csv`.
 
 ## Reproduction Commands
 
