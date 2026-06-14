@@ -94,3 +94,40 @@ speaker and removes nuisance variation before residual modeling:
 
 The TTS-side audio should be treated as the normal reference only after ASR
 readback validation passes the non-critical gate.
+
+## Step B: Residual Feature Dataset
+
+After CosyVoice3 full pair-data QA passes, build aligned mel/SSL residual
+features:
+
+```bash
+cd /data/qwen3-asr/repo/dysarthric_yue_Speech
+source /data/qwen3-asr/env.sh
+source /data/qwen3-asr/venvs/qwen3-asr/bin/activate
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy ALL_PROXY
+
+# Needed because the current main transformers version rejects .bin weights
+# under torch 2.5.1, while Chinese HuBERT is distributed as pytorch_model.bin.
+export PYTHONPATH=/data/qwen3-asr/overlays/cosyvoice-transformers451:${PYTHONPATH:-}
+
+python synthesis/dsi_v1/scripts/build_dsi_residual_features.py \
+  --generated-csv /data/qwen3-asr/synthesis/dsi_v1/pair_data_v1_cosyvoice3_tts_setting_v1/pair_manifest.generated.csv \
+  --out-dir /data/qwen3-asr/synthesis/dsi_v1/residual_features_v1_hubert_chinese \
+  --out-manifest /data/qwen3-asr/synthesis/dsi_v1/residual_features_v1_hubert_chinese/feature_manifest.csv \
+  --ssl-model /data/qwen3-asr/models/ssl/chinese-hubert-base \
+  --flush-every 25
+```
+
+Each feature file stores:
+
+```text
+norm_mel
+dys_mel_aligned
+residual_mel = dys_mel_aligned - norm_mel
+norm_ssl
+dys_ssl_aligned
+dtw_norm_to_dys_path
+```
+
+The V1 time grid is the normal-TTS mel frame grid. Dysarthric mel and SSL
+features are aligned to that grid through DTW.
