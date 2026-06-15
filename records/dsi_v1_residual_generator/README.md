@@ -115,12 +115,40 @@ on the normal-TTS time grid. Audio quality should therefore be interpreted
 conservatively; the key result is that predicted mel moves substantially closer
 to aligned patient mel before vocoder-quality work.
 
+Step E HiFT vocoder demo:
+
+- Remote output root: `/data/qwen3-asr/synthesis/dsi_v1/residual_generator_v1_hubert_chinese/step_e_demo_hift_global_v1`
+- Local copied private artifact root: `/Users/wuguocheng/Documents/Codex/2026-06-08/devbox-qwen-qwen3-asr-1-7b/artifacts/step_e_demo_hift_global_v1`
+- Vocoder: CosyVoice3 `CausalHiFTGenerator`
+- Vocoder checkpoint: `/data/qwen3-asr/models/tts/Fun-CosyVoice3-0.5B-2512/hift.pt`
+- Vocoder sample rate: 24 kHz
+- Input predictions: Step D `step_d_demo_gl_v1/predictions`
+- Demo rows: 4, matching Step D
+- Calibration: global mean/std calibration from each utterance's normal-side
+  Step B mel to CosyVoice3 normal-side mel
+- Output WAV files: 12 (`norm_hift_global`, `target_hift_global`,
+  `pred_hift_global` for each row)
+- Reference WAV copies: 8 (`norm_original`, `dys_original` for each row)
+- `pred_hift_global` duration range: `3.74` to `5.34` seconds
+- `pred_hift_global` peak mean/max: `0.562667` / `0.845345`
+- `pred_hift_global` RMS mean: `0.056658`
+
+This is a stronger demo than Griffin-Lim because it uses a neural vocoder, but
+it is still a compatibility experiment. CosyVoice3 HiFT is trained on 24 kHz
+CosyVoice log-magnitude mel (`n_fft=1920`, `hop=480`, `center=False`), while
+Step B residual features were built from 16 kHz torchaudio log-power mel
+(`n_fft=400`, `hop=320`, `center=True`). The current script therefore uses
+normal-side calibration before vocoding. The correct production version should
+rebuild Step B features directly in the CosyVoice3 mel space or train a
+matched vocoder.
+
 See:
 
 - `audit_sample32_summary.csv`
 - `smoke_overfit_32_summary.csv`
 - `train_dev_v1_h256_l4_lr1e3_bs8_epoch20_summary.csv`
 - `step_d_demo_gl_v1_summary.csv`
+- `step_e_demo_hift_global_v1_summary.csv`
 
 Reproduction commands:
 
@@ -167,5 +195,13 @@ python synthesis/dsi_v1/scripts/synthesize_dsi_residual_demo.py \
   --split test \
   --limit-per-split 2 \
   --griffinlim-iters 64 \
+  --copy-reference-wavs
+
+export PYTHONPATH=/data/qwen3-asr/third_party/CosyVoice:/data/qwen3-asr/third_party/CosyVoice/third_party/Matcha-TTS:${PYTHONPATH:-}
+python synthesis/dsi_v1/scripts/vocode_dsi_hift_demo.py \
+  --prediction-dir /data/qwen3-asr/synthesis/dsi_v1/residual_generator_v1_hubert_chinese/step_d_demo_gl_v1/predictions \
+  --feature-manifest /data/qwen3-asr/synthesis/dsi_v1/residual_features_v1_hubert_chinese/feature_manifest.csv \
+  --out-dir /data/qwen3-asr/synthesis/dsi_v1/residual_generator_v1_hubert_chinese/step_e_demo_hift_global_v1 \
+  --calibration global \
   --copy-reference-wavs
 ```
