@@ -162,6 +162,11 @@ Step E1 CosyVoice3-mel rebuild:
   0.830757, mean relative L1 gain 0.611711.
 - Local listening triplets:
   `/Users/wuguocheng/Documents/Codex/2026-06-08/devbox-qwen-qwen3-asr-1-7b/artifacts/step_e1_demo_hift_none_v1_listen_triplets`
+- Segment diagnostic result: 548 dev/test samples, 6658 approximate Jyutping
+  segments, overall mean norm-to-target L1 2.272858 to predicted-target L1
+  0.807834. Hard zero-shot bucket retains a larger gap ratio than easy/medium
+  (0.432409 vs 0.397085/0.398650), supporting the interpretation that global
+  identity transfers more reliably than patient-specific articulation details.
 
 Pipeline order:
 
