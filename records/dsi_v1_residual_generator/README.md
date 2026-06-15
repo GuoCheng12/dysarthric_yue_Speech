@@ -115,7 +115,7 @@ on the normal-TTS time grid. Audio quality should therefore be interpreted
 conservatively; the key result is that predicted mel moves substantially closer
 to aligned patient mel before vocoder-quality work.
 
-Step E HiFT vocoder demo:
+Step E0 HiFT compatibility demo:
 
 - Remote output root: `/data/qwen3-asr/synthesis/dsi_v1/residual_generator_v1_hubert_chinese/step_e_demo_hift_global_v1`
 - Local copied private artifact root: `/Users/wuguocheng/Documents/Codex/2026-06-08/devbox-qwen-qwen3-asr-1-7b/artifacts/step_e_demo_hift_global_v1`
@@ -141,6 +141,27 @@ Step B residual features were built from 16 kHz torchaudio log-power mel
 normal-side calibration before vocoding. The correct production version should
 rebuild Step B features directly in the CosyVoice3 mel space or train a
 matched vocoder.
+
+Step E1 CosyVoice3-mel rebuild:
+
+- Goal: rebuild the residual feature dataset in the exact mel space expected
+  by CosyVoice3 HiFT, then retrain the residual generator.
+- New feature root: `/data/qwen3-asr/synthesis/dsi_v1/residual_features_v2_cosyvoice3_mel`
+- New generator root: `/data/qwen3-asr/synthesis/dsi_v1/residual_generator_v2_cosyvoice3_mel`
+- Mel frontend: CosyVoice3/Matcha log-magnitude mel, 24 kHz, 80 bins,
+  `n_fft=1920`, `win=1920`, `hop=480`, `center=False`, `fmin=0`, `fmax=None`
+- SSL source: reused from Step B HuBERT features and interpolated to the new
+  CosyVoice3 mel frame length
+- Smoke build: 6 rows, generated 6/6, audit issues 0
+- Full pipeline: started at
+  `/data/qwen3-asr/synthesis/dsi_v1/residual_generator_v2_cosyvoice3_mel/e1_pipeline_20260615_144636`
+
+Pipeline order:
+
+1. Build full CosyVoice3-mel residual features.
+2. Audit 32 sampled feature files.
+3. Train residual generator with the same train/dev split and hyperparameters
+   as Step C formal run.
 
 See:
 
@@ -204,4 +225,10 @@ python synthesis/dsi_v1/scripts/vocode_dsi_hift_demo.py \
   --out-dir /data/qwen3-asr/synthesis/dsi_v1/residual_generator_v1_hubert_chinese/step_e_demo_hift_global_v1 \
   --calibration global \
   --copy-reference-wavs
+
+python synthesis/dsi_v1/scripts/build_dsi_cosyvoice_mel_features.py \
+  --source-feature-manifest /data/qwen3-asr/synthesis/dsi_v1/residual_features_v1_hubert_chinese/feature_manifest.csv \
+  --out-dir /data/qwen3-asr/synthesis/dsi_v1/residual_features_v2_cosyvoice3_mel \
+  --out-manifest /data/qwen3-asr/synthesis/dsi_v1/residual_features_v2_cosyvoice3_mel/feature_manifest.csv \
+  --flush-every 25
 ```

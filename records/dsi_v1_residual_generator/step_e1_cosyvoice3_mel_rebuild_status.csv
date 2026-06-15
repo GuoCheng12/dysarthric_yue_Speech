@@ -1,0 +1,22 @@
+metric,value
+status,running
+pipeline_root,/data/qwen3-asr/synthesis/dsi_v1/residual_generator_v2_cosyvoice3_mel/e1_pipeline_20260615_144636
+feature_root,/data/qwen3-asr/synthesis/dsi_v1/residual_features_v2_cosyvoice3_mel
+feature_manifest,/data/qwen3-asr/synthesis/dsi_v1/residual_features_v2_cosyvoice3_mel/feature_manifest.csv
+generator_root,/data/qwen3-asr/synthesis/dsi_v1/residual_generator_v2_cosyvoice3_mel/train_dev_v1_h256_l4_lr1e3_bs8_epoch20
+source_feature_manifest,/data/qwen3-asr/synthesis/dsi_v1/residual_features_v1_hubert_chinese/feature_manifest.csv
+mel_frontend,cosyvoice3_matcha_log_magnitude_mel
+sample_rate,24000
+n_mels,80
+n_fft,1920
+win_length,1920
+hop_length,480
+center,false
+f_min,0
+f_max,null
+ssl_source,reused_from_step_b_hubert_features_and_interpolated_to_cosy_mel_frames
+smoke_rows,6
+smoke_generated,6
+smoke_audit_issue_count,0
+full_pipeline_started_at,2026-06-15 14:46:36 UTC
+latest_observed_progress,50_of_2707_features_generated_at_elapsed_52.8s
