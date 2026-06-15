@@ -155,6 +155,13 @@ Step E1 CosyVoice3-mel rebuild:
 - Smoke build: 6 rows, generated 6/6, audit issues 0
 - Full pipeline: started at
   `/data/qwen3-asr/synthesis/dsi_v1/residual_generator_v2_cosyvoice3_mel/e1_pipeline_20260615_144636`
+- Full pipeline result: 2707/2707 features generated, sample audit issues 0,
+  best dev residual L1 0.825369 at epoch 16 / step 4320.
+- HiFT demo result: 12 dev/test listening triplets generated with no
+  calibration, mean norm-to-target L1 2.195493 to predicted-target L1
+  0.830757, mean relative L1 gain 0.611711.
+- Local listening triplets:
+  `/Users/wuguocheng/Documents/Codex/2026-06-08/devbox-qwen-qwen3-asr-1-7b/artifacts/step_e1_demo_hift_none_v1_listen_triplets`
 
 Pipeline order:
 
