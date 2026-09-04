@@ -1,0 +1,94 @@
+schema_version: "1"
+protocol_status: draft
+run_id: therapist_setting_d_v1
+setting_id: setting_d
+round_count: 4
+
+base_model_dir: /data/qwen3-asr/models/Qwen3-ASR-1.7B
+base_model_fingerprint:
+  path: /data/qwen3-asr/models/Qwen3-ASR-1.7B/model.safetensors.index.json
+  sha256: f994739fe38e5210b9e3e8ce6c6307315e2ceac3cb630e7b7414d69dce520f60
+  expected_rows: null
+initial_adapter: null
+
+real_train:
+  path: /data/qwen3-asr/finetune/data_setting_d_v1/setting_d_train.jsonl
+  sha256: 6d232f763e065f2bacea234a483948ec790a16354cfb5d76732453c1bfd31be8
+  expected_rows: 2117
+feedback_split:
+  path: /data/qwen3-asr/finetune/data_setting_d_v1/setting_d_dev.jsonl
+  sha256: 978c9537352f3725d0019a0329f5533d5900e9dfc74af472ee05032eab38ec4d
+  expected_rows: 258
+sealed_test_split:
+  path: /data/qwen3-asr/finetune/data_setting_d_v1/setting_d_test.jsonl
+  sha256: c150f7f7d8380901727a45dfa5481137d2a2ead823c01e08f11b3389e9aee543
+  expected_rows: 253
+
+speech_generator:
+  path: /data/qwen3-asr/records/cosyvoice3_reference_sft_setting_d_v1/speech_generator.pt
+  sha256: 5764178a90d234997b06dcc5fd74d530419c282b6959c089f4d09b0f3e6eaf0b
+  expected_rows: null
+frozen_reference_manifest:
+  path: /data/qwen3-asr/records/cosyvoice3_reference_sft_setting_d_v1/therapist_reference_manifest_v1.json
+  sha256: 52a314a0fb25694bd0fd6b24cd8e90be89a07e412715ac06fb6c670faf9a6e8c
+  expected_rows: null
+
+agent:
+  provider: OpenAI
+  base_url: https://api.laicaishare.xyz
+  model: gpt-5.6-sol
+  reasoning_effort: xhigh
+  store: false
+  max_retries: 0
+  api_key_env: OPENAI_API_KEY
+
+# These three budgets are draft research choices. Freeze them before `init`.
+synthetic_count_per_round: 480
+unique_stimulus_count_per_round: 60
+real_replay_count_per_round: 2117
+speaker_profiles:
+  all_patients_balanced:
+    difficulty_groups: [easy, medium, hard]
+  hard_patients_balanced:
+    difficulty_groups: [hard]
+  easy_medium_protection:
+    difficulty_groups: [easy, medium]
+
+lora:
+  rank: 16
+  alpha: 4
+  dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  learning_rate: 0.0002
+  per_device_batch_size: 1
+  gradient_accumulation_steps: 32
+  world_size: 1
+  # ceil((2117 real + 480 synthetic) / 32) = 82: one manifest pass.
+  optimizer_steps_per_round: 82
+  training_passes_per_round: 1
+  save_at_round_end: true
+  scheduler: linear
+  reset_scheduler_each_round: true
+  seed: 42
+
+evaluation:
+  language: Cantonese
+  batch_size: 8
+  critical_cer_threshold: 0.5
+  metrics:
+    - mean_utterance_cer
+    - pooled_cer
+    - patient_macro_cer
+    - critical_count
+    - exact_count
+
+skill_update_rounds:
+  - 2
+  - 4

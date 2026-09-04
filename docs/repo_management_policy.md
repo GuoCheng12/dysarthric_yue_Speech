@@ -1,77 +1,36 @@
-# Repository Management Policy
+# Repository management policy
 
-This repository is the management root for code, resources, data versions, experiment protocols, and aggregate results.
+Everything important must be represented in Git, but private or large payloads stay
+outside it.
 
-## Principle
+Tracked material includes source code, frozen protocols, split and artifact registries,
+sanitized aggregate results, and instructions that reproduce private artifacts. Patient
+audio and transcripts, row-level predictions, model weights, checkpoints, optimizer
+states, API keys, local proxy settings, and authentication files are never tracked.
 
-Everything important should be represented in git, but not every byte belongs in git.
+Every promoted dataset or artifact has a registry entry with a stable ID, private
+locator, version, checksum, expected size/count, provenance, and downstream role.
 
-The repository should contain:
+## Therapist-loop rules
 
-- source code
-- runbooks and protocols
-- data-cleaning and split definitions
-- dataset and artifact registry files
-- dependency and environment templates
-- public aggregate metrics
-- scripts that reproduce private artifacts from private inputs
+- A run starts only from a frozen, hashed protocol.
+- Setting D dev is the real-speech feedback split used during rounds.
+- Setting D test remains sealed until the fixed final round.
+- Each round starts from the previous adapter and uses fixed real replay.
+- Agent output cannot alter training hyperparameters, references, seeds, or paths.
+- Each phase cites immutable hashed artifacts.
+- A failure stops the round; there is no retry, refill, silent fallback, rollback, or
+  alternate method.
 
-The repository should not contain:
+See `docs/evaluation_protocol.md` for the final comparison.
 
-- patient audio payloads
-- raw private transcripts
-- per-utterance private prediction tables
-- model weights
-- full fine-tuned checkpoints
-- optimizer states
-- local credentials, proxy configs, or Codex auth state
-
-## Required Registry Entries
-
-Whenever a new dataset, model, checkpoint, or generated result becomes part of the project, add a small registry entry under one of:
-
-- `data/registry/`
-- `artifacts/registry/`
-
-Each entry should include:
-
-- stable name
-- version or date
-- privacy level
-- storage location or retrieval procedure
-- checksum if available
-- expected file count or size
-- generation command or source script
-- downstream experiments that depend on it
-
-## Experiment Rule
-
-Every new method should be runnable from the repository with private paths supplied by environment variables or command-line flags.
-
-Every evaluation after Experiment 2 must compare:
-
-1. `zero_shot`
-2. `E2_fullSFT_clean_pooled_epoch2`
-3. `new_method`
-
-The canonical helper is:
-
-```bash
-python finetune/scripts/build_three_way_comparison.py \
-  --baseline-predictions path/to/E2/test_predictions.csv \
-  --new-predictions path/to/new_method_test_predictions.csv \
-  --new-method-name METHOD_NAME \
-  --out-dir finetune/experiments/METHOD_NAME/eval_test
-```
-
-## Commit Hygiene
-
-Before committing, check:
+## Hygiene check
 
 ```bash
 git status --short
-git ls-files | rg '\\.(wav|flac|mp3|m4a|zip|jsonl|safetensors|bin|pt|pth|ckpt)$|(^|/)auth\\.|(^|/)config\\.yaml$|checkpoint-'
-git grep -n -E 'auth\\.json|auth\\.toml|password|secret|token='
+git ls-files | grep -E '\.(wav|flac|mp3|m4a|zip|jsonl|safetensors|bin|pt|pth|ckpt)$|(^|/)auth\.|checkpoint-'
+git grep -n -E 'password|secret|token=|sk-[A-Za-z0-9]'
 ```
 
-The second command should return no tracked payload files. The third command should only match ignore rules or benign tokenizer-related code.
+The payload scan should return no tracked private or model artifacts. Credential scans
+may match only this policy's literal search terms, never an actual credential.

@@ -1,0 +1,87 @@
+schema_version: 2
+registry_id: asr_baselines_checkpoints_v2
+description: Current Setting D ASR baselines and the frozen patient Speech Generator.
+
+model_signatures:
+  any_of: [adapter_model.safetensors, model.safetensors, model.safetensors.index.json]
+
+base_models:
+  - id: qwen3_asr_1p7b_local
+    upstream_id: Qwen/Qwen3-ASR-1.7B
+    path: /data/qwen3-asr/models/Qwen3-ASR-1.7B
+    payload_in_git: false
+    fingerprint_file: /data/qwen3-asr/models/Qwen3-ASR-1.7B/model.safetensors.index.json
+    fingerprint_sha256: f994739fe38e5210b9e3e8ce6c6307315e2ceac3cb630e7b7414d69dce520f60
+
+artifacts:
+  - id: setting_d.real_only.step40
+    display_name: Setting D real-only LoRA
+    setting_id: setting_d
+    role: primary_real_only_baseline
+    model_ref: qwen3_asr_1p7b_local
+    training:
+      method: joint_lora
+      rank: 16
+      alpha: 4
+      dropout: 0.05
+      effective_batch_size: 32
+      learning_rate: 0.0002
+      checkpoint_rule: minimum dev mean-utterance CER among 10-step snapshots
+      seeds: [42]
+    checkpoints:
+      - step: 40
+        path: /data/qwen3-asr/finetune/setting_d_v1/lora_current_default_r16_scale025_step140_seed42_v1/step_checkpoints/checkpoint-40
+    evaluation:
+      split: setting_d_test
+      sample_count: 253
+      hard_sample_count: 47
+      overall_cer: 0.249286
+      hard_cer: 0.634448
+      critical_error: 46
+      hard_critical_error: null
+      patient_macro_cer: null
+      patient_macro_note: not_reported_in_source_run_summary
+    public_record: records/setting_d_lora_baseline_step_v1
+
+  - id: setting_d.static_speech_generator_1440.step60
+    display_name: Setting D real plus static Speech Generator 1440
+    setting_id: setting_d
+    role: static_augmentation_baseline
+    model_ref: qwen3_asr_1p7b_local
+    training:
+      method: joint_lora
+      real_utterances: 2117
+      synthetic_utterances: 1440
+      rank: 16
+      alpha: 4
+      dropout: 0.05
+      effective_batch_size: 32
+      learning_rate: 0.0002
+      checkpoint_rule: minimum dev mean-utterance CER among 10-step snapshots
+      seeds: [42]
+    checkpoints:
+      - step: 60
+        path: /data/qwen3-asr/finetune/setting_d_highinfo1440_gradacc_fixed_v1/lora_current_default_r16_scale025_step140_seed42_v1/step_checkpoints/checkpoint-60
+    evaluation:
+      split: setting_d_test
+      sample_count: 253
+      hard_sample_count: 47
+      overall_cer: 0.252061
+      hard_cer: 0.647279
+      critical_error: 46
+      hard_critical_error: null
+      patient_macro_cer: null
+      patient_macro_note: not_reported_in_source_run_summary
+    public_record: records/setting_d_static_augmentation_v1
+
+speech_generators:
+  - id: speech_generator.setting_d.epoch8
+    role: frozen_patient_conditioned_synthesizer
+    checkpoint: /data/qwen3-asr/records/cosyvoice3_reference_sft_setting_d_v1/speech_generator.pt
+    checkpoint_sha256: 5764178a90d234997b06dcc5fd74d530419c282b6959c089f4d09b0f3e6eaf0b
+    base_model: /data/qwen3-asr/models/tts/Fun-CosyVoice3-0.5B-2512
+    setting_id: setting_d
+    selected_epoch: 8
+    reference_manifest: /data/qwen3-asr/records/cosyvoice3_reference_sft_setting_d_v1/therapist_reference_manifest_v1.json
+    reference_manifest_sha256: 52a314a0fb25694bd0fd6b24cd8e90be89a07e412715ac06fb6c670faf9a6e8c
+    public_record: synthesis/cosyvoice3_patient_sft/SPEECH_GENERATOR.md

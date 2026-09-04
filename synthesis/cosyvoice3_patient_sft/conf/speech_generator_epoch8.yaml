@@ -1,0 +1,61 @@
+artifact_id: speech_generator.setting_d.epoch8
+role: frozen_patient_conditioned_synthesizer
+base_model: /data/qwen3-asr/models/tts/Fun-CosyVoice3-0.5B-2512
+base_llm_sha256: 69f43bd545131c30e98947fb360ea8b4dc9916d8e83dded7757c7ea4f5a24970
+checkpoint: /data/qwen3-asr/records/cosyvoice3_reference_sft_setting_d_v1/speech_generator.pt
+checkpoint_sha256: 5764178a90d234997b06dcc5fd74d530419c282b6959c089f4d09b0f3e6eaf0b
+frozen_reference_manifest:
+  path: /data/qwen3-asr/records/cosyvoice3_reference_sft_setting_d_v1/therapist_reference_manifest_v1.json
+  sha256: 52a314a0fb25694bd0fd6b24cd8e90be89a07e412715ac06fb6c670faf9a6e8c
+  references: 57
+training_data:
+  setting: setting_d
+  utterances: 2108
+  patients: 57
+  reference_policy: same_patient_distinct_train_utterance
+model_scope: cosyvoice3_llm_only
+lora:
+  rank: 8
+  alpha: 16
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+optimization:
+  learning_rate: 0.0001
+  optimizer: adam
+  scheduler: constant
+  warmup_steps: 2500
+  maximum_mel_frames_per_batch: 2000
+  gradient_accumulation_steps: 2
+  seed: 1986
+selection:
+  selected_epoch: 8
+  dev_loss: 3.724884
+  dev_accuracy: 0.216534
+  selected_by: matched_human_listening_after_dev_selection
+runtime:
+  transformers_version: 4.51.3
+  transformers_overlay: /data/qwen3-asr/overlays/cosyvoice-transformers451
+  transformers_overlay_sha256: acde01791d0c393de7734a92fc3cf2f900ea089767bd0f5e2bc010f5589acb5c
+  cosyvoice_source: /data/qwen3-asr/third_party/CosyVoice
+  cosyvoice_source_sha256: 2396a65ff94698e85c5624c8c5bc46bfa199e8542d2706c25e58b8281269f46e
+  wetext_critical_content_sha256: 1d9a5354d54fad3d65f0f92fd79d0fa297d420522a0497f4bc22a6f91d608ee4
+  model_file_sha256:
+    cosyvoice3.yaml: f5a6b2c6f05139d0f18861a1fe506f751e787026b77c05f7e8fef9f8a4405965
+    flow.pt: a6fab32a7825e5b0bc855ddd948f8db9370b0a786fbc249caa4595e95b608e4b
+    hift.pt: b279d7641eb97ae55b3b540cfba4f953c26492a2df758328a89a4d007ab87a65
+    campplus.onnx: a6ac6a63997761ae2997373e2ee1c47040854b4b759ea41ec48e4e42df0f4d73
+    speech_tokenizer_v3.onnx: 23236a74175dbdda47afc66dbadd5bcb41303c467a57c261cb8539ad9db9208d
+    speech_tokenizer_v3.batch.onnx: b156b8a7bbff436585e153f4637b9a368009005ac66efa108a6c8bfb34e5ee43
+inference_contract:
+  prompt_instruction: "You are a helpful assistant.<|endofprompt|>"
+  stream: false
+  text_frontend: false
+  calls_per_sample: 1
+  retry: false
+  reference_substitution: false
+technical_qc:
+  duration_seconds: [0.25, 30.0]
+  minimum_peak: 0.0001
+  minimum_rms: 0.0001
+  maximum_absolute_dc: 0.2
+  maximum_clipping_fraction: 0.02

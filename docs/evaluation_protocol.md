@@ -1,76 +1,43 @@
-# Evaluation Protocol After E2
+# Setting D evaluation protocol
 
-The fixed baseline for all later experiments is:
+## Closed-loop development
 
-`E2_fullSFT_clean_pooled_epoch2`
+Each round evaluates the current adapter on the same 258-utterance real Setting D dev
+split. The Agent receives only a sanitized aggregate `EvidencePack`; it never receives
+audio, paths, patient IDs, row-level transcripts, or any test information.
 
-It refers to the full-parameter SFT epoch-2 checkpoint from `finetune/e2-pooled-sft-3epoch/checkpoint-138`.
+Every round reports the full result vector rather than a scalar utility:
 
-## Required Comparison
+- sample-weighted mean utterance CER and pooled CER;
+- patient macro CER;
+- exact and critical counts;
+- easy, medium, and hard breakdowns;
+- paired recovered, newly-wrong, preserved-correct, and persistent-wrong counts;
+- per-patient improved, worsened, and tied counts;
+- response of cited error clusters and off-target changes.
 
-All new methods must be compared on exactly the same cleaned dev/test rows and must include:
+Training continues for the protocol's fixed number of rounds. There is no rollback,
+proposal rejection, dense checkpoint search, or best-round selection.
 
-1. `zero_shot`
-2. `E2_fullSFT_clean_pooled_epoch2`
-3. `new_method`
+## Final comparison
 
-Do not report only zero-shot vs new method. The E2 epoch-2 baseline is now the adaptation baseline.
+After the method, budgets, round count, and final adapter are frozen, the 253-utterance
+Setting D test is evaluated once with explicit authorization. The required table is:
 
-## Required Per-Utterance Fields
+1. zero-shot Qwen3-ASR;
+2. real-only LoRA;
+3. static patient Speech Generator augmentation;
+4. Therapist Agent closed-loop;
+5. Therapist Agent without skill update, as the small secondary ablation.
 
-- `utt_id`
-- `speaker_id`
-- `disease_tag`
-- `duration`
-- `duration_bucket`
-- `zero_shot_bucket`
-- `task_type`
-- `clean_gt`
-- `zero_shot_predict`
-- `E2_fullSFT_clean_pooled_epoch2_predict`
-- `new_method_name`
-- `new_method_predict`
-- `zero_shot_cer`
-- `E2_fullSFT_clean_pooled_epoch2_cer`
-- `new_method_cer`
-- `delta_new_vs_zero_cer`
-- `delta_new_vs_E2_fullSFT_clean_pooled_epoch2_cer`
-- `zero_shot_critical`
-- `E2_fullSFT_clean_pooled_epoch2_critical`
-- `new_method_critical`
-- `audio_path`
+Report overall, easy, medium, hard, and patient macro CER, plus paired patient-level
+uncertainty. Settings A, B, and C are historical context and cannot be pooled into this
+table.
 
-## Required Group Summary Fields
+## Interpretation boundary
 
-- `group`
-- `sample_count`
-- `zero_shot_cer`
-- `E2_fullSFT_clean_pooled_epoch2_cer`
-- `new_method_cer`
-- `delta_new_vs_zero_cer`
-- `delta_new_vs_E2_fullSFT_clean_pooled_epoch2_cer`
-- `zero_shot_critical_rate`
-- `E2_fullSFT_clean_pooled_epoch2_critical_rate`
-- `new_method_critical_rate`
-- `delta_new_vs_zero_critical_rate`
-- `delta_new_vs_E2_fullSFT_clean_pooled_epoch2_critical_rate`
-- `zero_shot_critical_count`
-- `E2_fullSFT_clean_pooled_epoch2_critical_count`
-- `new_method_critical_count`
-
-## Standard Builder
-
-Use `finetune/scripts/build_three_way_comparison.py` after evaluating a new checkpoint:
-
-```bash
-python finetune/scripts/build_three_way_comparison.py \
-  --baseline-predictions finetune/baselines/E2_fullSFT_clean_pooled_epoch2/test_predictions.csv \
-  --new-predictions path/to/new_method_test_predictions.csv \
-  --new-method-name METHOD_NAME \
-  --out-dir finetune/experiments/METHOD_NAME/eval_test
-```
-
-The script writes:
-
-- `three_way_per_utterance.csv`
-- `three_way_summary_by_group.csv`
+The maintained extractor currently computes character-level GT-versus-ASR errors.
+Jyutping onset/nucleus/coda/tone evidence is a planned extension and must be separately
+validated before use. If added, it will locate recognition failures; it will not
+directly measure the patient's acoustic impairment or prove that the Speech Generator
+reproduced it.

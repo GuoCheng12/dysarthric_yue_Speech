@@ -1,116 +1,89 @@
-# Dysarthric Yue Speech ASR Experiments
+# Dysarthric Cantonese ASR
 
-This repository is the source of truth for Cantonese dysarthric speech ASR experiments with Qwen3-ASR.
+This repository contains the maintained code and reproducibility records for
+therapist-inspired closed-loop adaptation of Qwen3-ASR on dysarthric Cantonese speech.
 
-It manages code, experiment protocols, resource registries, dataset registries, aggregate results, and reproducibility documentation. Large or sensitive payloads such as patient audio, raw transcripts, per-utterance private predictions, model weights, checkpoints, caches, virtual environments, and local proxy/Codex authentication files are tracked through manifests and checksums rather than committed as raw files.
+## Current research line
 
-## Current Baseline
+The active setting is **Setting D**: seen patients and globally unseen content, after
+removing four unusable patients and one noisy utterance.
 
-The fixed adaptation baseline is:
-
-`E2_fullSFT_clean_pooled_epoch2`
-
-It refers to full-parameter SFT of `Qwen/Qwen3-ASR-1.7B` on automatically cleaned pooled read-sentence patient speech, using the epoch-2 checkpoint from the 3-epoch run.
-
-Headline test-set result:
-
-| group | sample_count | zero_shot_cer | E2_fullSFT_clean_pooled_epoch2_cer | delta_cer | zero_shot_critical_rate | E2_fullSFT_clean_pooled_epoch2_critical_rate |
+| split | utterances | patients | unique contents | easy | medium | hard |
 |---|---:|---:|---:|---:|---:|---:|
-| overall | 258 | 0.277309 | 0.139254 | -0.138055 | 0.205426 | 0.089147 |
-| easy | 135 | 0.060905 | 0.022489 | -0.038416 | 0.000000 | 0.000000 |
-| medium | 70 | 0.304910 | 0.116754 | -0.188156 | 0.000000 | 0.042857 |
-| hard | 53 | 0.792076 | 0.466393 | -0.325683 | 1.000000 | 0.377358 |
+| train | 2,117 | 66 | 48 | 1,096 | 608 | 413 |
+| dev | 258 | 36 | 6 | 134 | 70 | 54 |
+| test | 253 | 33 | 6 | 131 | 75 | 47 |
 
-## Repository Layout
+Train/dev/test have zero overlap at prompt ID, cleaned text, normalized text, and
+Jyutping levels. The frozen split hashes live in
+`data/registry/asr_dataset_settings_v1.yaml`.
+
+The current real-only LoRA improves hard test CER from 69.59% to 63.44%, but overall
+test CER changes from 24.39% to 24.93% because easy and medium speech regress. A formal
+1,440-utterance static Speech Generator augmentation run also failed to beat real-only.
+These observations motivate an adaptive data prescription rather than more static data.
 
 ```text
-src/
-  smoke_infer.py                # single-file Qwen3-ASR smoke inference
-  eval_asr_dir.py               # directory-level ASR evaluation utilities
-inference/scripts/
-  batch_infer_vlink_data_raw.py # batch zero-shot inference
-  score_vlink_results.py        # TextNorm_CER and Critical_Error scoring
-  prepare_experiment2_clean_manifest.py
-finetune/
-  official/qwen3_asr_sft.py     # Qwen3-ASR SFT script copy
-  scripts/                      # JSONL prep, checkpoint eval, three-way comparison
-synthesis/
-  dsi_v1/                       # deterministic speech-imitation pair-data demos
-benchmarks/
-  gpu_benchmark.py
-  qwen_sft_batch_probe.py
-docs/
-  experiment2_context.md
-  run_e2_pooled_sft.md
-  e3_lora_sft_protocol.md
-  evaluation_protocol.md
-  e2_fullsft_clean_pooled_epoch2_baseline.md
-examples/
-  env.example
-  dataset_layout.md
-results/
-  public aggregate summaries only
-records/
-  e2_error_movement/           # sanitized per-sample error movement records
-data/
-  registry/                    # private dataset manifests and version records
-artifacts/
-  registry/                    # checkpoint/result artifact records
+Qwen3-ASR on real feedback speech
+  -> aggregate character-level error evidence
+  -> Therapist Agent proposes one bounded prescription
+  -> patient-conditioned CosyVoice3 synthesis
+  -> fixed real replay + LoRA continuation
+  -> reassessment on real speech
+  -> reflection and versioned skill update
+  -> next round
 ```
 
-## Repository Management Rule
+There is no training-time proposal Gate, utility score, rollback, or automatic
+best-round selection. Phone-level evidence describes ASR output errors at GT
+phonological positions; it is not a deterministic patient pronunciation rulebook.
 
-All project work should be represented in this repository.
+## Maintained layout
 
-- Code changes live in `src/`, `inference/`, `finetune/`, or `benchmarks/`.
-- Dataset versions live in `data/registry/`.
-- Model/checkpoint/result artifact records live in `artifacts/registry/`.
-- Experiment decisions and protocols live in `docs/`.
-- Public aggregate summaries live in `results/`.
-- Sanitized experiment records live in `records/`.
+```text
+src/therapist_harness/
+  schema.py                        strict experiment contracts
+  text.py                          canonical CER/content identities
+  evidence.py                      paired real-speech error evidence
+  materialize.py                   proposal -> deterministic TTS assignments
+  agent.py, store.py               Agent request and immutable run state
+configs/therapist_setting_d_v1.yaml
+docs/therapist_closed_loop.md      method and ownership boundary
+finetune/scripts/
+  qwen3_asr_lora_sft.py            ordinary LoRA + adapter continuation
+  evaluate_asr_checkpoint.py       strict base/LoRA real-speech decoding
+synthesis/cosyvoice3_patient_sft/
+  synthesize_manifest.py           one-call, fixed-reference generation
+data/registry/                     frozen dataset identifiers and hashes
+artifacts/registry/                selected checkpoint identifiers
+records/                            sanitized aggregate findings only
+```
 
-Private or large files are still kept outside Git; the repository records where they are, how they were produced, and how to verify them.
+The current extractor is deliberately character-level. Jyutping/phone-context evidence
+is a future, separately tested extension; the repository does not imply that it already
+exists.
 
-## Evaluation Rule For Future Experiments
+The ASR trainer intentionally contains only the ordinary LoRA path required by the
+closed loop: fixed seed, correct gradient accumulation, and optional continuation from
+the previous adapter. Historical CTC, hard-weight, bridge, preference, rulebook, Gate,
+and verifier implementations were removed. See `records/rejected_approaches.md` and
+`docs/cleanup_20260904.md`.
 
-All future methods should report the same test/dev rows with three columns:
-
-1. `zero_shot`
-2. `E2_fullSFT_clean_pooled_epoch2`
-3. `new_method`
-
-Use:
+## Review the draft protocol
 
 ```bash
-python finetune/scripts/build_three_way_comparison.py \
-  --baseline-predictions path/to/E2/test_predictions.csv \
-  --new-predictions path/to/new_method_test_predictions.csv \
-  --new-method-name METHOD_NAME \
-  --out-dir finetune/experiments/METHOD_NAME/eval_test
+cd /data/qwen3-asr/repo/dysarthric_yue_Speech
+PYTHONPATH=src /data/qwen3-asr/venvs/qwen3-asr/bin/python \
+  -m therapist_harness validate configs/therapist_setting_d_v1.yaml
 ```
 
-The generated `three_way_summary_by_group.csv` is the canonical comparison table.
+The checked-in protocol is deliberately marked `draft`. The Harness refuses to create
+a run until the experimental budgets are reviewed and its status is changed to
+`frozen`.
 
-## Data And Model Policy
+## Privacy and artifact policy
 
-Keep the following payloads outside normal Git commits:
-
-- patient audio and transcript files
-- per-utterance predictions and manifests containing patient text
-- Qwen model weights
-- full fine-tuned checkpoints and optimizer states
-- local VPN/proxy/Codex authentication files
-
-For each such payload, add or update a registry entry with its purpose, private path or storage URI, version, checksum when available, generation command, and privacy level.
-
-See `examples/dataset_layout.md` for the expected private filesystem layout.
-
-## Current Records
-
-- `records/e2_error_movement/`: test-set movement table for `zero_shot` vs `E2_fullSFT_clean_pooled_epoch2`.
-  - `Rescued`: zero-shot critical, epoch2 non-critical.
-  - `Still hard`: critical before and after epoch2.
-  - `Regression`: non-critical in zero-shot, critical after epoch2.
-  - `Stable easy`: non-critical in both.
-- `records/prompt_leakage_e2_e3_test/`: train/test prompt leakage check at raw text, normalized text, and Jyutping sequence levels.
-- `records/dsi_v1_pair_demo/`: repo-safe record for the first normal-TTS/dysarthric pair-data demo.
+Patient audio, transcripts, row-level predictions, model weights, checkpoints, and API
+credentials remain outside Git. Repository files may contain stable private locators
+and hashes, but no private payload. The sealed Setting D test must not be exposed to the
+Agent or used for round selection.

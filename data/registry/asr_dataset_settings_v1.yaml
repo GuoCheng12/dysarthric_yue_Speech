@@ -1,0 +1,231 @@
+schema_version: 1
+registry_id: asr_dataset_settings_v1
+description: >
+  Stable identifiers for the four evaluation settings used by the dysarthric
+  Cantonese Qwen3-ASR project. Setting D is the active setting. Private paths are locators only;
+  their row-level contents must never be copied into Git.
+source_dataset_id: vlink_data_raw
+
+settings:
+  - id: setting_a
+    name: Prompt-disjoint, seen-speaker
+    status: retained_formal_setting
+    purpose: Measure generalization to unseen prompts when speakers may be seen in training.
+    split_policy:
+      speaker_disjoint: false
+      prompt_disjoint: true
+      prompt_identity_levels:
+        - raw_clean_text
+        - normalized_clean_text
+        - jyutping_sequence
+    counts:
+      total_samples: 2707
+      splits:
+        train:
+          samples: 2159
+          speakers: 71
+          prompts: 99
+          easy: 1092
+          medium: 608
+          hard: 459
+        dev:
+          samples: 273
+          speakers: 61
+          prompts: 12
+          easy: 140
+          medium: 78
+          hard: 55
+        test:
+          samples: 275
+          speakers: 43
+          prompts: 12
+          easy: 135
+          medium: 78
+          hard: 62
+    paths:
+      public_record: records/historical_settings_summary.md
+      private_csv_root: /data/qwen3-asr/inference/outputs/prompt_disjoint_v1
+      private_jsonl_root: /data/qwen3-asr/finetune/data_prompt_disjoint_v1
+      private_csv:
+        train: prompt_disjoint_train.csv
+        dev: prompt_disjoint_dev.csv
+        test: prompt_disjoint_test.csv
+      private_jsonl:
+        train: prompt_disjoint_train.jsonl
+        dev: prompt_disjoint_dev.jsonl
+        test: prompt_disjoint_test.jsonl
+    test_policy: >
+      Evaluate only after a dev-side checkpoint rule is fixed. Never combine
+      the aligned n=258 headline with exploratory n=275 one-epoch sweeps.
+
+  - id: setting_c
+    name: Seen-patient, globally unseen-content, Kaho-excluded
+    status: retained_formal_setting
+    purpose: Measure generalization to unseen content for patients observed during training.
+    exclusions:
+      speakers:
+        - vlink_Kaho
+    split_policy:
+      speaker_disjoint: false
+      every_eval_speaker_seen_in_train: true
+      prompt_disjoint: true
+      prompt_identity_levels:
+        - prompt_id
+        - raw_clean_text
+        - normalized_clean_text
+        - jyutping_sequence
+    counts:
+      total_samples: 2641
+      splits:
+        train:
+          samples: 2130
+          speakers: 70
+          prompts: 48
+          easy: 1097
+          medium: 608
+          hard: 425
+        dev:
+          samples: 258
+          speakers: 36
+          prompts: 6
+          easy: 134
+          medium: 70
+          hard: 54
+        test:
+          samples: 253
+          speakers: 33
+          prompts: 6
+          easy: 131
+          medium: 75
+          hard: 47
+    paths:
+      public_record: records/historical_settings_summary.md
+      private_csv_root: /data/qwen3-asr/inference/outputs/setting_c_seen_patient_unseen_content_v1
+      private_jsonl_root: /data/qwen3-asr/finetune/data_setting_c_v1
+      private_csv:
+        train: setting_c_train.csv
+        dev: setting_c_dev.csv
+        test: setting_c_test.csv
+      private_jsonl:
+        train: setting_c_train.jsonl
+        dev: setting_c_dev.jsonl
+        test: setting_c_test.jsonl
+    audit_policy: Independent audit must pass before training.
+    test_policy: Select the method and checkpoint on dev only, then evaluate test once after freezing.
+
+  - id: setting_b
+    name: Strict speaker+prompt-disjoint
+    status: retained_primary_setting
+    purpose: Measure generalization to unseen patients and unseen prompts.
+    split_policy:
+      speaker_disjoint: true
+      prompt_disjoint: true
+      prompt_identity_levels:
+        - prompt_id
+        - raw_clean_text
+        - normalized_clean_text
+        - jyutping_sequence
+    counts:
+      total_samples: 1199
+      splits:
+        train:
+          samples: 986
+          speakers: 43
+          prompts: 73
+          easy: 491
+          medium: 293
+          hard: 202
+        dev:
+          samples: 107
+          speakers: 10
+          prompts: 12
+          easy: 59
+          medium: 26
+          hard: 22
+        test:
+          samples: 106
+          speakers: 10
+          prompts: 12
+          easy: 58
+          medium: 22
+          hard: 26
+    paths:
+      public_record: records/historical_settings_summary.md
+      private_csv_root: /data/qwen3-asr/inference/outputs/speaker_prompt_disjoint_v1
+      private_jsonl_root: /data/qwen3-asr/finetune/data_speaker_prompt_disjoint_v1
+      private_csv:
+        train: speaker_prompt_disjoint_train.csv
+        dev: speaker_prompt_disjoint_dev.csv
+        test: speaker_prompt_disjoint_test.csv
+      private_jsonl:
+        train: speaker_prompt_disjoint_train.jsonl
+        dev: speaker_prompt_disjoint_dev.jsonl
+        test: speaker_prompt_disjoint_test.jsonl
+    test_policy: >
+      Strict test is gated. Search and select on strict dev, freeze the method
+      and checkpoint rule, then evaluate strict test only with explicit authorization.
+
+  - id: setting_d
+    name: QC-frozen seen-patient, globally unseen-content
+    status: active_primary_setting
+    purpose: >
+      Measure adaptation to globally unseen content for observed patients after
+      removing unusable patients and one confirmed noisy utterance.
+    derived_from: setting_c
+    exclusions:
+      speakers: [vlink201, vlink203, vlink225, vlink243]
+      utterances: [vlink211/7290411755587742893228]
+    split_policy:
+      speaker_disjoint: false
+      every_eval_speaker_seen_in_train: true
+      prompt_disjoint: true
+      prompt_identity_levels:
+        - prompt_id
+        - raw_clean_text
+        - normalized_clean_text
+        - jyutping_sequence
+    counts:
+      total_samples: 2628
+      splits:
+        train:
+          samples: 2117
+          speakers: 66
+          prompts: 48
+          easy: 1096
+          medium: 608
+          hard: 413
+        dev:
+          samples: 258
+          speakers: 36
+          prompts: 6
+          easy: 134
+          medium: 70
+          hard: 54
+        test:
+          samples: 253
+          speakers: 33
+          prompts: 6
+          easy: 131
+          medium: 75
+          hard: 47
+    paths:
+      public_record: records/setting_d_lora_baseline_step_v1
+      private_csv_root: /data/qwen3-asr/inference/outputs/setting_d_seen_patient_unseen_content_v1_qc_frozen
+      private_jsonl_root: /data/qwen3-asr/finetune/data_setting_d_v1
+      private_csv:
+        train: setting_d_train.csv
+        dev: setting_d_dev.csv
+        test: setting_d_test.csv
+      private_jsonl:
+        train: setting_d_train.jsonl
+        dev: setting_d_dev.jsonl
+        test: setting_d_test.jsonl
+    sha256:
+      manifest: 7bf5cc077f5a4e0789196e5fcf17959efcb0eeef94ccfc00b061ec5e481dc9a8
+      train: 6d232f763e065f2bacea234a483948ec790a16354cfb5d76732453c1bfd31be8
+      dev: 978c9537352f3725d0019a0329f5533d5900e9dfc74af472ee05032eab38ec4d
+      test: c150f7f7d8380901727a45dfa5481137d2a2ead823c01e08f11b3389e9aee543
+    audit_policy: Frozen QC audit and all four content-identity overlap checks must pass.
+    test_policy: >
+      During closed-loop development, use only dev as real-speech feedback. Evaluate
+      test once after the fixed final round and explicit authorization.

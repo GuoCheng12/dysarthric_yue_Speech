@@ -1,4 +1,4 @@
-# Private Dataset Layout
+# Private Setting D layout
 
 The scripts expect private data to live outside the git repository.
 
@@ -14,25 +14,31 @@ One working layout is:
         SPEAKER_ID/
           transcript.txt
           *.wav
-  inference/
-    outputs/
   finetune/
-    data/
-    e2-pooled-sft-3epoch/
+    data_setting_d_v1/
+      setting_d_train.jsonl
+      setting_d_dev.jsonl
+      setting_d_test.jsonl
+  records/
+    cosyvoice3_reference_sft_setting_d_v1/
+      speech_generator.pt
+      therapist_reference_manifest_v1.json
 ```
 
-The raw dataset and generated per-utterance outputs are not included in this repository.
+The raw dataset, frozen Setting D rows, patient references, generated audio, and model
+checkpoints are private artifacts outside this Git repository. Their identities and
+hashes are registered in `data/registry/`, `artifacts/registry/`, and the frozen run
+protocol.
 
-For Experiment 2, the private cleaning manifest should provide at least:
+Each Setting D JSONL row consumed by the maintained ASR evaluator provides:
 
 - `utt_id`
 - `speaker_id`
 - `disease_tag`
-- `audio_path`
-- `raw_gt`
+- `audio` (absolute path)
 - `clean_gt`
-- `task_type`
-- `duration`
-- `zero_shot_cer`
-- `zero_shot_critical`
-- `split`
+- `prompt_id`
+- `zero_shot_bucket` (`easy`, `medium`, or `hard`)
+
+The Therapist Agent never receives these private rows. The Harness reduces real dev
+predictions to an anonymized aggregate `EvidencePack` before the Agent boundary.

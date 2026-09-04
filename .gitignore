@@ -26,12 +26,10 @@ logs/
 wandb/
 tmp/
 outputs/
+runs/
 inference/outputs/
 finetune/data/
 finetune/logs/
-finetune/e2-pooled-sft*/
-finetune/baselines/*/dev_predictions.csv
-finetune/baselines/*/test_predictions.csv
 *.safetensors
 *.bin
 *.pt
@@ -47,6 +45,7 @@ finetune/baselines/*/test_predictions.csv
 *.jsonl
 
 # Secrets / local machine config
+/.secrets/
 auth.json
 auth.toml
 config.toml

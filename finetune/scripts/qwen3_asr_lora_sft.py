@@ -14,7 +14,7 @@ from pathlib import Path
 import torch
 from datasets import load_dataset
 from qwen_asr import Qwen3ASRModel
-from transformers import GenerationConfig, TrainingArguments
+from transformers import GenerationConfig, TrainingArguments, set_seed
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "finetune" / "official"))
@@ -30,7 +30,7 @@ from qwen3_asr_sft import (  # noqa: E402
 )
 
 try:
-    from peft import LoraConfig, get_peft_model
+    from peft import LoraConfig, PeftModel, get_peft_model
 except ImportError as exc:  # pragma: no cover
     raise SystemExit(
         "Missing dependency `peft`. Install it in the training environment, "
@@ -39,29 +39,6 @@ except ImportError as exc:  # pragma: no cover
 
 
 DEFAULT_TARGET_MODULES = "q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj"
-TEXT_DECODER_PREFIX = "thinker.model.layers."
-AUDIO_TOWER_PREFIX = "thinker.audio_tower."
-AUDIO_ENCODER_PREFIX = "thinker.audio_tower.layers."
-AUDIO_PROJECTOR_MODULES = (
-    "thinker.audio_tower.proj1",
-    "thinker.audio_tower.proj2",
-)
-AUDIO_ADAPTER_CONVOUT_PROJECTOR_MODULES = (
-    "thinker.audio_tower.conv_out",
-    "thinker.audio_tower.proj1",
-    "thinker.audio_tower.proj2",
-)
-LORA_TARGET_PRESETS = (
-    "current_default",
-    "decoder_only",
-    "audio_projector",
-    "audio_adapter_convout_proj",
-    "audio_attn_qkv",
-    "audio_attn_qkvo",
-    "audio_ffn",
-    "audio_encoder_all",
-    "audio_tower_all",
-)
 
 
 def parse_args():
@@ -82,6 +59,7 @@ def parse_args():
     p.add_argument("--log_steps", type=int, default=5)
     p.add_argument("--lr_scheduler_type", type=str, default="linear")
     p.add_argument("--warmup_ratio", type=float, default=0.02)
+    p.add_argument("--seed", type=int, default=42)
 
     p.add_argument("--num_workers", type=int, default=2)
     p.add_argument("--pin_memory", type=int, default=1)
@@ -89,9 +67,9 @@ def parse_args():
     p.add_argument("--prefetch_factor", type=int, default=2)
 
     p.add_argument("--save_strategy", type=str, default="steps")
-    p.add_argument("--save_steps", type=int, default=69)
+    p.add_argument("--save_steps", type=int, default=50)
     p.add_argument("--save_total_limit", type=int, default=3)
-    p.add_argument("--save_final_checkpoint", type=int, default=0)
+    p.add_argument("--save_final_checkpoint", type=int, default=1)
 
     p.add_argument("--resume_from", type=str, default="")
     p.add_argument("--resume", type=int, default=0)
@@ -99,108 +77,43 @@ def parse_args():
     p.add_argument("--run_name", type=str, default="")
 
     p.add_argument("--lora_rank", type=int, default=16)
-    p.add_argument("--lora_alpha", type=float, default=32)
-    p.add_argument(
-        "--lora_scale",
-        type=float,
-        default=None,
-        help="Optional LoRA scaling lambda. When set, lora_alpha = lora_rank * lora_scale.",
-    )
+    p.add_argument("--lora_alpha", type=float, default=4)
     p.add_argument("--lora_dropout", type=float, default=0.05)
+    p.add_argument("--lora_target_modules", type=str, default=DEFAULT_TARGET_MODULES)
     p.add_argument(
-        "--lora_target_preset",
+        "--lora_init_adapter_path",
         type=str,
-        default="current_default",
-        choices=LORA_TARGET_PRESETS,
+        default="",
         help=(
-            "Preset for LoRA target modules. Use --lora_target_modules to "
-            "override with an explicit comma-separated module list."
+            "Optional existing LoRA adapter checkpoint to continue training from. "
+            "When set, the adapter is loaded as trainable instead of creating a fresh LoRA adapter."
         ),
     )
-    p.add_argument("--lora_target_modules", type=str, default="")
-    p.add_argument("--lora_bias", type=str, default="none", choices=["none", "all", "lora_only"])
     p.add_argument("--dry_run_model_setup", type=int, default=0)
 
     return p.parse_args()
 
 
 def parse_target_modules(value: str):
-    value = (value or "").strip()
-    if value == "all-linear":
-        return "all-linear"
-    return [item.strip() for item in value.split(",") if item.strip()]
+    modules = [item.strip() for item in value.split(",") if item.strip()]
+    if not modules:
+        raise ValueError(
+            "--lora_target_modules must contain at least one module suffix"
+        )
+    if len(set(modules)) != len(modules):
+        raise ValueError("--lora_target_modules contains duplicates")
+    return modules
 
 
 def linear_module_names(model):
-    return [name for name, module in model.named_modules() if isinstance(module, torch.nn.Linear)]
-
-
-def ends_any(name: str, suffixes: list[str] | tuple[str, ...]) -> bool:
-    return any(name.endswith(suffix) for suffix in suffixes)
-
-
-def require_exact_linear_modules(model, names: list[str]) -> list[str]:
-    linear_names = set(linear_module_names(model))
-    missing = [name for name in names if name not in linear_names]
-    if missing:
-        raise RuntimeError(f"Preset resolved missing Linear module(s): {missing}")
-    return names
-
-
-def expand_target_preset(model, preset: str):
-    linear_names = linear_module_names(model)
-    default_suffixes = DEFAULT_TARGET_MODULES.split(",")
-
-    if preset == "current_default":
-        return default_suffixes
-    if preset == "decoder_only":
-        return [
-            name
-            for name in linear_names
-            if name.startswith(TEXT_DECODER_PREFIX) and ends_any(name, default_suffixes)
-        ]
-    if preset == "audio_projector":
-        return require_exact_linear_modules(model, list(AUDIO_PROJECTOR_MODULES))
-    if preset == "audio_adapter_convout_proj":
-        return require_exact_linear_modules(model, list(AUDIO_ADAPTER_CONVOUT_PROJECTOR_MODULES))
-    if preset == "audio_attn_qkv":
-        return [
-            name
-            for name in linear_names
-            if name.startswith(AUDIO_ENCODER_PREFIX) and ends_any(name, ("q_proj", "k_proj", "v_proj"))
-        ]
-    if preset == "audio_attn_qkvo":
-        return [
-            name
-            for name in linear_names
-            if name.startswith(AUDIO_ENCODER_PREFIX)
-            and ends_any(name, ("q_proj", "k_proj", "v_proj", "out_proj"))
-        ]
-    if preset == "audio_ffn":
-        return [
-            name
-            for name in linear_names
-            if name.startswith(AUDIO_ENCODER_PREFIX) and ends_any(name, ("fc1", "fc2"))
-        ]
-    if preset == "audio_encoder_all":
-        return [name for name in linear_names if name.startswith(AUDIO_ENCODER_PREFIX)]
-    if preset == "audio_tower_all":
-        return [name for name in linear_names if name.startswith(AUDIO_TOWER_PREFIX)]
-
-    raise ValueError(f"Unknown LoRA target preset: {preset}")
-
-
-def resolve_target_modules(model, preset: str, custom_modules: str):
-    custom_modules = (custom_modules or "").strip()
-    if custom_modules:
-        return parse_target_modules(custom_modules), True
-    return expand_target_preset(model, preset), False
+    return [
+        name
+        for name, module in model.named_modules()
+        if isinstance(module, torch.nn.Linear)
+    ]
 
 
 def list_targeted_linear_modules(model, target_modules):
-    if target_modules == "all-linear":
-        return linear_module_names(model)
-
     matched = []
     for name, module in model.named_modules():
         if not isinstance(module, torch.nn.Linear):
@@ -210,15 +123,7 @@ def list_targeted_linear_modules(model, target_modules):
     return matched
 
 
-def format_target_modules_for_log(target_modules):
-    if target_modules == "all-linear":
-        return "all-linear"
-    if len(target_modules) <= 24:
-        return target_modules
-    return target_modules[:24] + [f"... ({len(target_modules) - 24} more)"]
-
-
-def write_lora_metadata(path: Path, args, target_modules, custom_target_modules, matched_modules, model):
+def write_lora_metadata(path: Path, args, target_modules, matched_modules, model):
     path.mkdir(parents=True, exist_ok=True)
     trainable = 0
     total = 0
@@ -232,13 +137,12 @@ def write_lora_metadata(path: Path, args, target_modules, custom_target_modules,
         "base_model": args.model_path,
         "train_file": args.train_file,
         "eval_file": args.eval_file,
+        "seed": args.seed,
+        "lora_init_adapter_path": args.lora_init_adapter_path,
         "lora_rank": args.lora_rank,
         "lora_alpha": args.lora_alpha,
         "lora_scale": args.lora_alpha / args.lora_rank,
         "lora_dropout": args.lora_dropout,
-        "lora_bias": args.lora_bias,
-        "lora_target_preset": args.lora_target_preset,
-        "lora_target_custom": custom_target_modules,
         "lora_target_modules": target_modules,
         "matched_linear_module_count": len(matched_modules),
         "matched_linear_modules": matched_modules,
@@ -252,14 +156,31 @@ def write_lora_metadata(path: Path, args, target_modules, custom_target_modules,
     )
 
 
+class QwenASRLoRATrainer(CastFloatInputsTrainer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Qwen3-ASR exposes ``**kwargs`` in forward, so Trainer otherwise assumes
+        # that the model consumes ``num_items_in_batch`` and skips its gradient-
+        # accumulation normalization. The current Qwen loss does not forward
+        # that value to ``loss_function``; it returns an ordinary mean CE loss.
+        self.model_accepts_loss_kwargs = False
+        assert self.model_accepts_loss_kwargs is False
+        print(
+            "[loss-normalization] mode=trainer_gradient_accumulation_mean "
+            "model_accepts_loss_kwargs=False",
+            flush=True,
+        )
+
+
 def main():
     args = parse_args()
     if not args.train_file:
-        raise ValueError("TRAIN_FILE is required (json/jsonl). Needs fields: audio, text, optional prompt")
-    if args.lora_scale is not None:
-        if args.lora_scale <= 0:
-            raise ValueError("--lora_scale must be positive")
-        args.lora_alpha = args.lora_rank * args.lora_scale
+        raise ValueError(
+            "TRAIN_FILE is required (json/jsonl). Needs fields: audio, text, optional prompt"
+        )
+    set_seed(args.seed)
+    if int(os.environ.get("WORLD_SIZE", "1")) != 1:
+        raise RuntimeError("the maintained LoRA path requires WORLD_SIZE=1")
 
     use_bf16 = torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 8
     asr_wrapper = Qwen3ASRModel.from_pretrained(
@@ -275,43 +196,62 @@ def main():
     if hasattr(model, "config"):
         model.config.use_cache = False
 
-    target_modules, custom_target_modules = resolve_target_modules(
-        model, args.lora_target_preset, args.lora_target_modules
-    )
+    target_modules = parse_target_modules(args.lora_target_modules)
     matched_modules = list_targeted_linear_modules(model, target_modules)
     if not matched_modules:
         raise RuntimeError(
             "LoRA target modules matched 0 Linear layers. "
             f"Requested target_modules={target_modules!r}. "
-            "Try another --lora_target_preset, --lora_target_modules all-linear, "
-            "or inspect model.named_modules()."
+            "Inspect model.named_modules() and the frozen protocol."
         )
 
-    lora_config = LoraConfig(
-        r=args.lora_rank,
-        lora_alpha=args.lora_alpha,
-        lora_dropout=args.lora_dropout,
-        bias=args.lora_bias,
-        target_modules=target_modules,
-    )
-    model = get_peft_model(model, lora_config)
+    if args.lora_init_adapter_path.strip():
+        model = PeftModel.from_pretrained(
+            model,
+            args.lora_init_adapter_path.strip(),
+            is_trainable=True,
+        )
+        adapter_name = model.active_adapter
+        adapter_config = model.peft_config[adapter_name]
+        actual_targets = set(adapter_config.target_modules)
+        if actual_targets != set(target_modules):
+            raise RuntimeError(
+                "continued adapter target modules differ from the frozen protocol: "
+                f"{sorted(actual_targets)} != {sorted(target_modules)}"
+            )
+        if (
+            adapter_config.r != args.lora_rank
+            or float(adapter_config.lora_alpha) != args.lora_alpha
+            or float(adapter_config.lora_dropout) != args.lora_dropout
+        ):
+            raise RuntimeError(
+                "continued adapter LoRA configuration differs from arguments"
+            )
+    else:
+        lora_config = LoraConfig(
+            r=args.lora_rank,
+            lora_alpha=args.lora_alpha,
+            lora_dropout=args.lora_dropout,
+            bias="none",
+            target_modules=target_modules,
+        )
+        model = get_peft_model(model, lora_config)
     if hasattr(model, "print_trainable_parameters"):
         model.print_trainable_parameters()
     write_lora_metadata(
         Path(args.output_dir),
         args,
         target_modules,
-        custom_target_modules,
         matched_modules,
         model,
     )
-    print(f"[lora] target_preset={args.lora_target_preset}")
-    print(f"[lora] custom_target_modules={custom_target_modules}")
-    print(f"[lora] target_modules={format_target_modules_for_log(target_modules)}")
+    print(f"[lora] target_modules={target_modules}")
     print(f"[lora] matched_linear_module_count={len(matched_modules)}")
     print(f"[lora] metadata={Path(args.output_dir) / 'lora_run_metadata.json'}")
     if args.dry_run_model_setup == 1:
-        print("[dry_run_model_setup] LoRA model setup succeeded; exiting before dataset/training.")
+        print(
+            "[dry_run_model_setup] LoRA model setup succeeded; exiting before dataset/training."
+        )
         return
 
     raw_ds = load_dataset(
@@ -329,7 +269,9 @@ def main():
         if drop:
             ds[split] = ds[split].remove_columns(drop)
 
-    collator = DataCollatorForQwen3ASRFinetuning(processor=processor, sampling_rate=args.sr)
+    collator = DataCollatorForQwen3ASRFinetuning(
+        processor=processor, sampling_rate=args.sr
+    )
 
     training_args = TrainingArguments(
         output_dir=args.output_dir,
@@ -341,16 +283,20 @@ def main():
         logging_steps=args.log_steps,
         lr_scheduler_type=args.lr_scheduler_type,
         warmup_ratio=args.warmup_ratio,
+        seed=args.seed,
+        data_seed=args.seed,
         dataloader_num_workers=args.num_workers,
         dataloader_pin_memory=(args.pin_memory == 1),
         dataloader_persistent_workers=(args.persistent_workers == 1),
-        dataloader_prefetch_factor=args.prefetch_factor if args.num_workers > 0 else None,
+        dataloader_prefetch_factor=args.prefetch_factor
+        if args.num_workers > 0
+        else None,
         save_strategy=args.save_strategy,
         save_steps=args.save_steps,
         save_total_limit=args.save_total_limit,
         save_safetensors=True,
-        eval_strategy="steps",
-        eval_steps=args.save_steps,
+        eval_strategy="steps" if args.eval_file else "no",
+        eval_steps=args.save_steps if args.eval_file else None,
         do_eval=bool(args.eval_file),
         bf16=use_bf16,
         fp16=not use_bf16,
@@ -360,14 +306,16 @@ def main():
         run_name=args.run_name or None,
     )
 
-    trainer = CastFloatInputsTrainer(
+    trainer = QwenASRLoRATrainer(
         model=model,
         args=training_args,
         train_dataset=ds["train"],
         eval_dataset=ds.get("validation", None),
         data_collator=collator,
         tokenizer=processor.tokenizer,
-        callbacks=[MakeEveryCheckpointInferableCallback(base_model_path=args.model_path)],
+        callbacks=[
+            MakeEveryCheckpointInferableCallback(base_model_path=args.model_path)
+        ],
     )
 
     resume_from = (args.resume_from or "").strip()
