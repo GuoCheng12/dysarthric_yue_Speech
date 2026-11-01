@@ -1,0 +1,547 @@
+{
+  "source_archive": "/Users/wuguocheng/Downloads/part-00141.tar",
+  "source_sha256": "b4a1ca0c1816f493b40d66a1eaf6bcc3741e64d0afab8755944c9055461c6f23",
+  "files": [
+    {
+      "path": "runtime/examples/launch_group_material_exploration.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/examples/launch_group_material_exploration.py",
+      "bytes": 8825,
+      "sha256": "566d9f67ecc5323fd09e07c81c1fa30a8d6a665a61385190e4bf1d43e6b07b92"
+    },
+    {
+      "path": "runtime/examples/probe_material_candidate_ids.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/examples/probe_material_candidate_ids.py",
+      "bytes": 2848,
+      "sha256": "672f95b518f1451dd4deb800122e9620464855843963b07e99981b60b77f67e3"
+    },
+    {
+      "path": "runtime/examples/run_fresh_lora_sft_efgh_20260910.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/examples/run_fresh_lora_sft_efgh_20260910.py",
+      "bytes": 24467,
+      "sha256": "a593a2b5172f4558aa62ab0b9c87a015cb84821dc11a9509034921906fc24423"
+    },
+    {
+      "path": "runtime/examples/run_fresh_setting_e_audio_lr2em4_4gpu_50epochs_20260911.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/examples/run_fresh_setting_e_audio_lr2em4_4gpu_50epochs_20260911.py",
+      "bytes": 25548,
+      "sha256": "f27ef8ac551ad35d5679630b410d6b5f900b62772becc5d97a98b95b917d9d06"
+    },
+    {
+      "path": "runtime/examples/run_setting_e_material_exploration_20260911.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/examples/run_setting_e_material_exploration_20260911.py",
+      "bytes": 12924,
+      "sha256": "e0f29d42f59008caa0b0c119c4063b83d134b602cd6599f3679bcd168792c0c3"
+    },
+    {
+      "path": "runtime/examples/run_setting_e_sampling_curriculum_20260911.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/examples/run_setting_e_sampling_curriculum_20260911.py",
+      "bytes": 45161,
+      "sha256": "928b0c22a8b01249e8b796675596bce89d0633e170ef2ac3ecc94d7ed6d68a4b"
+    },
+    {
+      "path": "runtime/finetune/official/qwen3_asr_sft.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/finetune/official/qwen3_asr_sft.py",
+      "bytes": 10955,
+      "sha256": "530aff1f23e5bd2b84bc2f2974773134fd51a36dcb7579f58a658a73a9b281e7"
+    },
+    {
+      "path": "runtime/finetune/scripts/qwen3_asr_lora_sft.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/finetune/scripts/qwen3_asr_lora_sft.py",
+      "bytes": 14439,
+      "sha256": "5c1e72e2242375fcf5afefd3818ffd9f477ad4319eef147181918bf07ff87c64"
+    },
+    {
+      "path": "runtime/src/therapist_harness/__init__.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/__init__.py",
+      "bytes": 505,
+      "sha256": "dec3c393ebd6fa072b48b00cf1aed7bbd4de4ca402521bdfd5182520ebd1dfe6"
+    },
+    {
+      "path": "runtime/src/therapist_harness/__main__.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/__main__.py",
+      "bytes": 49,
+      "sha256": "0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3"
+    },
+    {
+      "path": "runtime/src/therapist_harness/agent.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/agent.py",
+      "bytes": 9911,
+      "sha256": "c10e2713e3b05935762224edd2385806dc5407a4b451e87dc3be25d0a01746a8"
+    },
+    {
+      "path": "runtime/src/therapist_harness/asr_sequence_objectives.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/asr_sequence_objectives.py",
+      "bytes": 2809,
+      "sha256": "acd47ad6f40c9d7a83de84a71281dcaddebb67410d55f438243d4a73d1a383de"
+    },
+    {
+      "path": "runtime/src/therapist_harness/audio_review.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/audio_review.py",
+      "bytes": 10125,
+      "sha256": "a40b273910c71b4fdbd2b853ef9974ce2a859b4103a85b7bd513135cda2ad070"
+    },
+    {
+      "path": "runtime/src/therapist_harness/capabilities.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/capabilities.py",
+      "bytes": 16975,
+      "sha256": "704f23069a988c854e4159aef7224db39400998ff91ded80dec4becd2087b3a0"
+    },
+    {
+      "path": "runtime/src/therapist_harness/checkpoint_promotion.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/checkpoint_promotion.py",
+      "bytes": 4122,
+      "sha256": "e0552ee65104809b457fad67ffa92f00d33a8f74aabce95ec505bfb8d7b37542"
+    },
+    {
+      "path": "runtime/src/therapist_harness/cli.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/cli.py",
+      "bytes": 14347,
+      "sha256": "6d87b741380f877419b0831103c84006a9202e389bfbb14fde9ac28c9af31ef9"
+    },
+    {
+      "path": "runtime/src/therapist_harness/content_curriculum.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/content_curriculum.py",
+      "bytes": 17745,
+      "sha256": "42116f8aaef07a01d791ae597f48ca6ecece8bed3060b976879b841c78559bf1"
+    },
+    {
+      "path": "runtime/src/therapist_harness/curriculum_v2.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/curriculum_v2.py",
+      "bytes": 15890,
+      "sha256": "f839d8e45545d075b553763239ad22bac06c90b9d1e3adaab6dc361c731b0971"
+    },
+    {
+      "path": "runtime/src/therapist_harness/curriculum_v2_training.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/curriculum_v2_training.py",
+      "bytes": 3972,
+      "sha256": "6deb9332f6c6cfa9d8a66be65dfe63c9551ad79862f29b4162f337580964cd15"
+    },
+    {
+      "path": "runtime/src/therapist_harness/dpo_training.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/dpo_training.py",
+      "bytes": 9841,
+      "sha256": "9b374288a945fee1a0f6e34dd08b11f6141891ab17ce180264a57bfeaa5f55b1"
+    },
+    {
+      "path": "runtime/src/therapist_harness/evidence.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/evidence.py",
+      "bytes": 61739,
+      "sha256": "0aaf3046a6550cd9faffde1f9af61af84dd048d28d212b19f2e390a0a29ea2fa"
+    },
+    {
+      "path": "runtime/src/therapist_harness/evidence_pack.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/evidence_pack.py",
+      "bytes": 16821,
+      "sha256": "ac0c18222f72130eb05a28536c45d515a6ed1c454edb2f9ad734e18db1e998f0"
+    },
+    {
+      "path": "runtime/src/therapist_harness/generation_controller.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/generation_controller.py",
+      "bytes": 10243,
+      "sha256": "5266c78d916132d5763906191036046f53e6ee88afe7d1a48d45bbb1afc9a6a2"
+    },
+    {
+      "path": "runtime/src/therapist_harness/generation_design.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/generation_design.py",
+      "bytes": 3415,
+      "sha256": "5f468361f512829ab7abd00422b959dab69db9bc61eea01e06b0ba93d94c28b0"
+    },
+    {
+      "path": "runtime/src/therapist_harness/grounding.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/grounding.py",
+      "bytes": 7409,
+      "sha256": "86f9b3dd2db22789afcbd86bccd4f8ea7129362c82b94595a09994c866e9ac5c"
+    },
+    {
+      "path": "runtime/src/therapist_harness/laicai_credentials.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/laicai_credentials.py",
+      "bytes": 980,
+      "sha256": "21390fd546b6cced654f952df3469d3d468c427930f67ac939fbadfb90ca7223"
+    },
+    {
+      "path": "runtime/src/therapist_harness/material_sampling_mas.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/material_sampling_mas.py",
+      "bytes": 18205,
+      "sha256": "48bd937b3bf9518afde201941084b204ffdff4bc35aae04e4b840544bb919b6b"
+    },
+    {
+      "path": "runtime/src/therapist_harness/material_selection_offline.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/material_selection_offline.py",
+      "bytes": 10396,
+      "sha256": "6bf9652c197bdae8e33d41cb77bbbb02f6939bb1e5be59668ae7405a4b9b8e55"
+    },
+    {
+      "path": "runtime/src/therapist_harness/materialize.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/materialize.py",
+      "bytes": 28357,
+      "sha256": "180c68ea0ef8aa5d64d64c3a371a57dc70c013c638d953b70cbfb627c2a04ae0"
+    },
+    {
+      "path": "runtime/src/therapist_harness/memory.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/memory.py",
+      "bytes": 9114,
+      "sha256": "55a76ceab1d9dc5a713194ad778934d47aebfed6078739d4a0ad77799c71b23a"
+    },
+    {
+      "path": "runtime/src/therapist_harness/memory_schema.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/memory_schema.py",
+      "bytes": 2709,
+      "sha256": "a587db0c8da47d43130abcc47f76dd877ef3cfdf1343a8929ecf0e1c52307787"
+    },
+    {
+      "path": "runtime/src/therapist_harness/outcome.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/outcome.py",
+      "bytes": 45674,
+      "sha256": "2745b448575c7bf49e7f302f21bc713c3b2c647db8a340cf8d3dd5d484323f08"
+    },
+    {
+      "path": "runtime/src/therapist_harness/phonology.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/phonology.py",
+      "bytes": 20275,
+      "sha256": "7bd35e9e39dd10eaf2ecbfc3a527a479c33109f131d13983aa6239c781e8d0d6"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_allocation_agent.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_allocation_agent.py",
+      "bytes": 8539,
+      "sha256": "fb03965d4565da210d7616fa2843ae2582d0ff6eee7c3d7e1a6624ef863f0844"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_contract.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_contract.py",
+      "bytes": 11893,
+      "sha256": "2e14cd604cc8ab95d8b80f1e92f809f949ba251b680e233ee3d9e687eaf5ff6e"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_data.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_data.py",
+      "bytes": 13410,
+      "sha256": "8fe80305d81ee4380c0f8ef696b3a167850f8abd0ad50325e946ae54249d7668"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_execution_v2.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_execution_v2.py",
+      "bytes": 7820,
+      "sha256": "cead9ff31baa80fa21e8ea98cd36220311cbb823800576b2768e2096a734f6c5"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_loop.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_loop.py",
+      "bytes": 54201,
+      "sha256": "52405694ac883edc6245519bc8780ce179634cc8d68198fe226a3ff427b129a7"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_migration_v2.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_migration_v2.py",
+      "bytes": 7123,
+      "sha256": "6d4aaefcfa163686b4a62b58d46828e628ffdd3cbf0df544f97dfe7b506d2d4d"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_sampling_merge.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_sampling_merge.py",
+      "bytes": 7833,
+      "sha256": "0527c73284f8e543da90dce7a18282ca9520f08f5ac48c83ba6da16be1e550c8"
+    },
+    {
+      "path": "runtime/src/therapist_harness/preference_token_mask.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/preference_token_mask.py",
+      "bytes": 3487,
+      "sha256": "3563534c94fd13da94f21cd130c11aacfdac95ce0180e9bc242ebf9322c75460"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/audio_review.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/audio_review.md",
+      "bytes": 1539,
+      "sha256": "de98b81f12f5f32f166fb37da05b340d3984fd77246aafb83086fdc978828a6c"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/content_curriculum_prescribe.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/content_curriculum_prescribe.md",
+      "bytes": 7201,
+      "sha256": "e33d6970bd57d1242651ff9b5c5a86f742bbc842652593f29a4beffa45d985d0"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/content_curriculum_reflect.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/content_curriculum_reflect.md",
+      "bytes": 3848,
+      "sha256": "7c656842eb1c3b111d1ec1c6bec21ca058994ae87ae8619a2f31faa2f75aea86"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/curriculum_v2_prescribe.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/curriculum_v2_prescribe.md",
+      "bytes": 6978,
+      "sha256": "2597889eb363f20a7e5912504de55742598d619d65086fe2a943c715f6968170"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/curriculum_v2_reflect.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/curriculum_v2_reflect.md",
+      "bytes": 3956,
+      "sha256": "0a88e05889c2b3111fecd00448ac898a00288cf8b9d1cb63c0f030c624828865"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/material_sampling_diagnose.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/material_sampling_diagnose.md",
+      "bytes": 1633,
+      "sha256": "e055bd4866c99158d1b6bf34365e1c27cd0fb97eb43fa71cf87ea89be7911654"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/material_sampling_experience.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/material_sampling_experience.md",
+      "bytes": 1124,
+      "sha256": "b9f447c3b9f6080c8409657b982b755b144f0cf645e05d555ebbb1dd3e4b5796"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/material_sampling_instruction.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/material_sampling_instruction.md",
+      "bytes": 2488,
+      "sha256": "d251324e6d7173bb5048d8a76e29441c9befaad819956a61107db9c14614c4c8"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/material_sampling_reflect.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/material_sampling_reflect.md",
+      "bytes": 1571,
+      "sha256": "31970df6858776a1197f79b86b3c26ed240b3bab40b205505b3822e23c9720d6"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/material_sampling_schedule.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/material_sampling_schedule.md",
+      "bytes": 1636,
+      "sha256": "7a726ca9f4abca283eacca47dc3e29dd8b36df06ff137907aaa842c255288407"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/material_selection_offline.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/material_selection_offline.md",
+      "bytes": 3024,
+      "sha256": "f911f59105718c337ad7160c795cabc988cf78de1086202c9e52a3073372beca"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/real_curriculum.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/real_curriculum.md",
+      "bytes": 4792,
+      "sha256": "e1b1babdf591d648a24af2f6d9aee57fc68b0862b4f863363ab2c1a0919153b2"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/real_curriculum_reflection.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/real_curriculum_reflection.md",
+      "bytes": 1976,
+      "sha256": "862747eeeb3eb1d1f0dd46fe80cd75d921af5789cfeb422702efabb888af5e60"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/real_sampling_experience.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/real_sampling_experience.md",
+      "bytes": 1045,
+      "sha256": "6689cbee02b2646e991459a2fafaca469e7037a7c3d129833057ffdab65a1800"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/real_sampling_instruction.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/real_sampling_instruction.md",
+      "bytes": 4247,
+      "sha256": "be13dade4e8ac01e64cf729bd2ae5c7c3760b4b57f76f963d0677c87b78fbec7"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/real_sampling_prescribe.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/real_sampling_prescribe.md",
+      "bytes": 1490,
+      "sha256": "48f78a4590ea009e70aee080d3eb8b04dd6b3ff6fc1fe0c67de0fc0da0186a0a"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/real_sampling_reflect.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/real_sampling_reflect.md",
+      "bytes": 1128,
+      "sha256": "f7770ba2131237cb39b4075645eadfbd3d6254fd8a32c041604daaeeeb3dd59e"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/reflection.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/reflection.md",
+      "bytes": 16668,
+      "sha256": "01955030199d24433133e16f15b4a04a60e48d47c878dbc1d9176fbb8633e36c"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/skill_optimizer.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/skill_optimizer.md",
+      "bytes": 742,
+      "sha256": "b3844ecb71e31ffaeb6f5c05428b64a7c0d9d1463f87bc09218a570089b71936"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/therapist.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/therapist.md",
+      "bytes": 34483,
+      "sha256": "ace5bc302e1deba6e353d1a1c2495a19eff891c483dd69446a32bc9ae4902219"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/transcript_review.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/transcript_review.md",
+      "bytes": 1888,
+      "sha256": "e594f2dbcc0e274fd1c34a63ca25e3f24cef9c062f4e81f7b5ca3b4e138b38c3"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/transcript_review_semantic_probe_v1.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/transcript_review_semantic_probe_v1.md",
+      "bytes": 1886,
+      "sha256": "4b5d021a9ab66ba3bb95a00318c6a1e358c597e47d86905ac3cae37327acecb3"
+    },
+    {
+      "path": "runtime/src/therapist_harness/prompts/transcript_review_v2.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/prompts/transcript_review_v2.md",
+      "bytes": 1330,
+      "sha256": "22a4d4b45c3f6042efa1f7a069af12292c594218276f2055aed20740f8ed33fa"
+    },
+    {
+      "path": "runtime/src/therapist_harness/real_curriculum.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/real_curriculum.py",
+      "bytes": 6044,
+      "sha256": "d189d5ad85ad072afcb1b0871237deb9f42e4691d33aee7a6b36d5cbcdbe8c35"
+    },
+    {
+      "path": "runtime/src/therapist_harness/real_sampling_mas.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/real_sampling_mas.py",
+      "bytes": 14329,
+      "sha256": "94fea14caaa4d19f4974612c985afa4efcd5b60c4d741a2f15c908ab918930cb"
+    },
+    {
+      "path": "runtime/src/therapist_harness/retention_contract.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/retention_contract.py",
+      "bytes": 4613,
+      "sha256": "e6b131c113b1dbad030f0f2e779c0a801365d7641867a306e767787f690d9b35"
+    },
+    {
+      "path": "runtime/src/therapist_harness/retention_loop.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/retention_loop.py",
+      "bytes": 21310,
+      "sha256": "ffd76da561b45ae3d0b7f4522f60a307703054ab0081eafc5e0d6f6d2ca42f7e"
+    },
+    {
+      "path": "runtime/src/therapist_harness/review_worker.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/review_worker.py",
+      "bytes": 2960,
+      "sha256": "783c556c3c921ec57d206cacc8a9a3b573e794953e2ae3c9778c5fbee21ca19a"
+    },
+    {
+      "path": "runtime/src/therapist_harness/round_schema.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/round_schema.py",
+      "bytes": 40775,
+      "sha256": "42593e0472b7fd2c84747fafd79282de604e5a13f06638890680d9bdd57639a7"
+    },
+    {
+      "path": "runtime/src/therapist_harness/round_training.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/round_training.py",
+      "bytes": 3716,
+      "sha256": "8ff3678025dc2dcdbd5a2eb8c220d4e0caf05567bd3f189c267dcf0231b258aa"
+    },
+    {
+      "path": "runtime/src/therapist_harness/sampling_curriculum_data.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/sampling_curriculum_data.py",
+      "bytes": 10978,
+      "sha256": "f8030e07a87bff08adbc5621c273e3099eb61b139a26cf7b5ca3c436abe7a64c"
+    },
+    {
+      "path": "runtime/src/therapist_harness/sampling_curriculum_runtime.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/sampling_curriculum_runtime.py",
+      "bytes": 2747,
+      "sha256": "c8ba8864fa167efd00b569f1e0f15a6298675df7f0788edd33eaf78f44578506"
+    },
+    {
+      "path": "runtime/src/therapist_harness/sampling_phonology.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/sampling_phonology.py",
+      "bytes": 6461,
+      "sha256": "141780175f7144e3af53cb14a3c5bfffaa928f9834fc74945a63f225eb38450b"
+    },
+    {
+      "path": "runtime/src/therapist_harness/schema.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/schema.py",
+      "bytes": 68918,
+      "sha256": "37af26bfa2a10f2790d3899affe755855df0abf033ac50425e08d0553b02b97e"
+    },
+    {
+      "path": "runtime/src/therapist_harness/skills/v000/SKILL.md",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/skills/v000/SKILL.md",
+      "bytes": 1341,
+      "sha256": "9e1e289a7c3a7cba6bfec6cbe8bb7d1c493d341c3e4ac97537cab5121a233246"
+    },
+    {
+      "path": "runtime/src/therapist_harness/source_migration.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/source_migration.py",
+      "bytes": 1429,
+      "sha256": "593b0de0ceb3004597ce2db0414521a0f3c89d50a4255bd4fc004ec13c57c83f"
+    },
+    {
+      "path": "runtime/src/therapist_harness/store.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/store.py",
+      "bytes": 28270,
+      "sha256": "f3cbcf02b05401c5e9b8b715d14e3f7aa4e3629471715abca6777876f6b763d4"
+    },
+    {
+      "path": "runtime/src/therapist_harness/text.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/text.py",
+      "bytes": 11597,
+      "sha256": "2e168b1f093f4644d60c8ede6381f612f52c9b091dafa53558f89845c6a4d621"
+    },
+    {
+      "path": "runtime/src/therapist_harness/text_scoring_v2.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/text_scoring_v2.py",
+      "bytes": 465,
+      "sha256": "3ef1f46bc2562d1056340fc8319e3023260d307162828217674a2d750e692231"
+    },
+    {
+      "path": "runtime/src/therapist_harness/training_allocation.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/training_allocation.py",
+      "bytes": 1749,
+      "sha256": "ad3cf5d86e6cbea041658263e799959a31f3d7fcca4e93214f112f1b6532ea9a"
+    },
+    {
+      "path": "runtime/src/therapist_harness/transcript_review.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/src/therapist_harness/transcript_review.py",
+      "bytes": 11458,
+      "sha256": "11e69cffc9a92cac053f37b2746747ac6bacba2ade04e8aa18e17cbdb5c428be"
+    },
+    {
+      "path": "runtime/tests/test_experience_round_guard.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/tests/test_experience_round_guard.py",
+      "bytes": 1183,
+      "sha256": "1a70e030d8f3bf0909b0df8ca6aac5f6c3b536c9cc840cd93875ed2c76847204"
+    },
+    {
+      "path": "runtime/tests/test_group_material_outcome.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/tests/test_group_material_outcome.py",
+      "bytes": 1944,
+      "sha256": "cce0452ad642ca49e8855491271cee55f354fa21b23a1a9773e8706703d69464"
+    },
+    {
+      "path": "runtime/tests/test_group_material_sampling.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/tests/test_group_material_sampling.py",
+      "bytes": 2908,
+      "sha256": "95c69537903311767ff666821a7cce3ad5e041e6aee40e967168c00f621befa9"
+    },
+    {
+      "path": "runtime/tests/test_material_candidate_ids.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/tests/test_material_candidate_ids.py",
+      "bytes": 1489,
+      "sha256": "cba816caff060a288d5edc87dce7492a8ead9db96c9008e9738cb1eef244d4be"
+    },
+    {
+      "path": "runtime/tests/test_material_evidence_ids.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/tests/test_material_evidence_ids.py",
+      "bytes": 1256,
+      "sha256": "f39a06218dc61dc6e023bbddf325fdca213c81ae7adabe0073caad355fbb43cf"
+    },
+    {
+      "path": "runtime/tests/test_material_exposure_metadata.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/tests/test_material_exposure_metadata.py",
+      "bytes": 1527,
+      "sha256": "1a7e08429911bcbd0e2a56a02efd4ab8f5c7d8053bfe8c9c3e1ac7fdaebbcc70"
+    },
+    {
+      "path": "runtime/tests/test_material_sampling_mas.py",
+      "archive_path": "records/therapist_mas_setting_e_v1/runtime_versions/group_material_purpose_v8/tests/test_material_sampling_mas.py",
+      "bytes": 6698,
+      "sha256": "ed758609fbdfc9f366c2d5b960608dc4d711050e29e6d02ac54e2986a556dec3"
+    }
+  ],
+  "verification": {
+    "python_syntax_files": 65,
+    "offline_usg_tests": {
+      "passed": 20,
+      "test_files": 7
+    }
+  }
+}

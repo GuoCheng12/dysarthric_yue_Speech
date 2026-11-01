@@ -1,0 +1,87 @@
+{
+  "status": "usage_audited_two_preprocessing_updates_completed",
+  "setting": "E",
+  "test_audio": 372,
+  "audit_root": "/data/qwen3-asr/records/cantoprobe_asr_usage_audit_20260912_v1",
+  "report": "/data/qwen3-asr/records/cantoprobe_asr_usage_audit_20260912_v1/README.zh.md",
+  "comparison": "/data/qwen3-asr/records/cantoprobe_asr_usage_audit_20260912_v1/corrected/comparison.json",
+  "current_models": {
+    "whisper": {
+      "summary_path": "/data/qwen3-asr/records/cantoprobe_asr_usage_audit_20260912_v1/corrected/whisper/summary.json",
+      "CER_percent": 74.51022146507665,
+      "patient_equal_CER_percent": 71.58143936805865,
+      "errors": 3499,
+      "chars": 4696,
+      "edit_operations": {
+        "insert": 1423,
+        "replace": 1630,
+        "delete": 446
+      },
+      "capped_audio": 4,
+      "capped_errors": 837,
+      "capped_error_contribution_CER_points": 17.8236797274276,
+      "all_372_order_and_scoring_verified": true,
+      "canonical_waveform_hash_recorded_and_verified": true,
+      "previous_CER_percent": 80.25979557069847,
+      "changed_transcripts": 194
+    },
+    "sensevoice": {
+      "summary_path": "/data/qwen3-asr/records/cantoprobe_setting_e_zero_shot_20260912_v1/sensevoice/summary.json",
+      "CER_percent": 23.93526405451448,
+      "patient_equal_CER_percent": 23.17586946939491,
+      "errors": 1124,
+      "chars": 4696,
+      "edit_operations": {
+        "replace": 870,
+        "delete": 51,
+        "insert": 203
+      },
+      "capped_audio": 0,
+      "capped_errors": 0,
+      "capped_error_contribution_CER_points": 0.0,
+      "all_372_order_and_scoring_verified": true,
+      "canonical_waveform_hash_recorded_and_verified": false
+    },
+    "glm": {
+      "summary_path": "/data/qwen3-asr/records/cantoprobe_setting_e_zero_shot_20260912_v1/glm/summary.json",
+      "CER_percent": 69.22913117546848,
+      "patient_equal_CER_percent": 62.79301885176816,
+      "errors": 3251,
+      "chars": 4696,
+      "edit_operations": {
+        "replace": 1781,
+        "insert": 1400,
+        "delete": 70
+      },
+      "capped_audio": 5,
+      "capped_errors": 1107,
+      "capped_error_contribution_CER_points": 23.573253833049403,
+      "all_372_order_and_scoring_verified": true,
+      "canonical_waveform_hash_recorded_and_verified": false
+    },
+    "funnano": {
+      "summary_path": "/data/qwen3-asr/records/cantoprobe_asr_usage_audit_20260912_v1/corrected/funnano/summary.json",
+      "CER_percent": 29.578364565587734,
+      "patient_equal_CER_percent": 26.791300386354873,
+      "errors": 1389,
+      "chars": 4696,
+      "edit_operations": {
+        "replace": 1126,
+        "insert": 219,
+        "delete": 44
+      },
+      "capped_audio": 0,
+      "capped_errors": 0,
+      "capped_error_contribution_CER_points": 0.0,
+      "all_372_order_and_scoring_verified": true,
+      "canonical_waveform_hash_recorded_and_verified": true,
+      "previous_CER_percent": 29.81260647359455,
+      "changed_transcripts": 105
+    }
+  },
+  "qwen_reference_CER_percent": 25.298126064735946,
+  "decoding_contract": "/data/qwen3-asr/records/cantoprobe_asr_usage_audit_20260912_v1/decoding_contract_audit.json",
+  "all_old_records_retained": true,
+  "current_inference_script": "/data/qwen3-asr/repo/dysarthric_yue_Speech/examples/transcribe_cantoprobe_zero_shot.py",
+  "current_inference_script_sha256": "982643fca22a2c54320d81544b41c2bb61a8b4ef2fc356e0783e90d4e2efb3f0"
+}

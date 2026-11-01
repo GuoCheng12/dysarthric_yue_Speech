@@ -130,6 +130,7 @@ class DataCollatorForQwen3ASRFinetuning:
             audio=audios,
             return_tensors="pt",
             padding=True,
+            padding_side="right",
             truncation=False,
         )
         prefix_inputs = self.processor(
@@ -137,6 +138,7 @@ class DataCollatorForQwen3ASRFinetuning:
             audio=audios,
             return_tensors="pt",
             padding=True,
+            padding_side="right",
             truncation=False,
         )
 

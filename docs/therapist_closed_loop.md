@@ -21,10 +21,13 @@ The Harness owns every experimental degree of freedom that must remain comparabl
 - LoRA modules, rank, scale, learning rate, batch size, steps, and scheduler;
 - ASR evaluation, checkpoint lineage, artifacts, and the sealed test.
 
-The Therapist Agent can only read a sanitized `EvidencePack` and return one `Proposal`.
-It chooses the error evidence to target, stimulus texts, target/contrast/protection role,
-and a permitted patient allocation profile. It cannot choose hyperparameters, paths,
-references, seeds, or checkpoints.
+In prescribe mode the Therapist reads a sanitized `EvidencePack` and returns one
+`Proposal`. In reflect mode the same role reads the completed intervention and its
+real-speech response, then supplies the next-round interpretation and guidance.
+It chooses the error evidence to target, stimulus texts, target/contrast/protection/maintenance
+role, and bounded copy dose. Agent v1 cannot choose a patient allocation profile: the
+Harness fixes all-patient balanced reference allocation. It cannot choose
+hyperparameters, paths, references, seeds, or checkpoints.
 
 ## Four-round sequence
 
@@ -53,14 +56,33 @@ the same Therapist loop without skill updates.
 
 ## Contracts
 
-The executable Pydantic contracts are in `src/therapist_harness/schema.py`:
+The currently validated prescription contracts are in
+`src/therapist_harness/schema.py`:
 
 - `RunProtocol`: human-frozen experiment constants and hashes;
-- `EvidencePack`: metrics, paired transitions, error clusters, history, and action bounds;
-- `Proposal`: evidence-cited hypothesis and exact stimulus prescription;
-- `RoundResult`: observed result vector without a scalar utility;
-- `Reflection`: response-to-intervention interpretation;
-- `SkillPatch`: cited, versioned changes to therapist knowledge.
+- `EvidencePack`: metrics, paired transitions, error clusters, positive easy/medium
+  capability anchors, complete episode history, and action bounds;
+- `Proposal`: evidence-cited hypothesis, exact stimulus prescription, and structured
+  post-intervention expectations.
+
+The post-intervention contracts are in `src/therapist_harness/round_schema.py`:
+
+- `EvaluationPlan`: pre-intervention measurement registration;
+- `MaterializationSidecar`: exact Proposal-to-TTS dose binding;
+- `RoundResultV2`: deterministic paired real-speech response;
+- `ReflectionPack` (schema 3) and `ReflectionV2` (schema 4): sanitized reflection input
+  containing the actual prescribed texts, and fact-grounded Therapist interpretation.
+
+The rejected provisional `RoundResult`, `Reflection`, and forced `SkillPatch` classes
+have been removed. The immutable intervention ledger and versioned active-Skill
+loading are implemented in `memory.py`/`memory_schema.py`. LLM SkillOptimizer authoring
+and rule-patch rendering remain unimplemented until completed intervention histories
+exist.
+
+The exact per-round Agent input and comparison semantics are defined in
+`docs/evidence_pack.md`.
+The post-intervention Reflection mode and later Skill Optimizer interfaces are defined
+in `docs/reflection_contract.md`.
 
 The local run store writes one immutable event per phase. It rejects phase skipping and
 artifact overwrite. Agent requests use the Responses API with structured output,
@@ -68,20 +90,85 @@ artifact overwrite. Agent requests use the Responses API with structured output,
 
 ## Current implementation status
 
-`configs/therapist_setting_d_v1.yaml` records verified Setting D and Speech Generator
-artifacts. It intentionally remains `protocol_status: draft`: the round budget and
-update length are working choices, not frozen experimental facts. `validate` accepts a
-draft for review; `init` refuses it until a human changes the status to `frozen`.
+`configs/therapist_setting_d_v1.yaml` records verified Setting D, Speech Generator,
+Real-only M0, and zero-shot dev-prediction anchors. It intentionally remains
+`protocol_status: draft`: the round budget and update length are working choices, not
+frozen experimental facts. `validate` accepts a draft for review; `init` refuses it
+until a human changes the status to `frozen`.
 
 ```bash
 PYTHONPATH=src /data/qwen3-asr/venvs/qwen3-asr/bin/python \
   -m therapist_harness validate configs/therapist_setting_d_v1.yaml
 ```
 
-Paired predictions can now be reduced to canonical character-level metrics, transitions,
-and anonymized error clusters. A validated proposal can be materialized into deterministic
+Paired predictions can now be reduced to canonical metrics, transitions, bounded
+character plus conservative Jyutping-component error clusters, and at most 12 positive
+easy/medium capability anchors. Maintenance anchors require correct support across
+two patients and two contents, not an existing error. `maintenance` preserves those
+abilities; `protection` repairs an observed easy/medium regression, not a global
+increase confined to hard patients. The Therapist
+Agent uses a fixed evidence-semantics instruction, an explicitly selected or
+round-bound active Skill, Responses API strict
+structured output, validated aggregate/cluster citations, TTS-actionability checks,
+actual-TTS-text character/Jyutping grounding, and carrier-exposure dose limits.
+Natural, meaningful concentrated practice is allowed with a stated rationale;
+texts need not all be common daily requests. There is no per-sentence primary-carrier
+maximum. Counts still feed the sidecar and Reflection; only the separate existing
+threshold-edge batch exposure limits remain hard carrier-dose bounds.
+Proposal v3 also supplies machine-readable directional outcomes for reassessment.
+
+The deterministic Outcome Compiler and the existing Therapist's Reflection mode are
+now implemented. The Compiler freezes an `EvaluationPlan` before intervention, binds
+the materialized dose to the source Proposal, recomputes paired real-speech metrics and
+cluster changes, and emits a sanitized `ReflectionPack`. The formal Reflection entry
+revalidates that pack against the frozen Protocol plus the source EvidencePack and
+Proposal before making an API request. It does not score, accept, reject, roll back, or
+select an intervention.
+
+Reflection separates Compiler-owned `compiled_expectation_verdict` from the Agent's
+independent `hypothesis_verdict`. Measured outcomes and carrier retention remain fixed;
+the Therapist supplies cited interpretations, provisional explanations, and testable
+next-round predictions. The actual Reflection enters the next EvidencePack immediately,
+without waiting for a Skill update. An explicit update after round 2 affects round 3;
+`no_change` retains the current Skill but never removes episode history. Both prescribe
+and reflect use the same captured Skill within a round.
+
+For example, initialize the Skill registry and prescribe with a rebuilt EvidencePack
+(paths below are placeholders for a prepared run):
+
+```bash
+PYTHONPATH=src /data/qwen3-asr/venvs/qwen3-asr/bin/python \
+  -m therapist_harness init-skills /absolute/path/run/skills \
+  src/therapist_harness/skills/v000/SKILL.md
+
+PYTHONPATH=src /data/qwen3-asr/venvs/qwen3-asr/bin/python \
+  -m therapist_harness propose configs/therapist_setting_d_v1.yaml \
+  /absolute/path/round_001/evidence.json /absolute/path/round_001/proposal.json \
+  --skills-dir /absolute/path/run/skills
+```
+
+Both `propose` and `reflect` require `--skills-dir` or an explicit
+`--skill /absolute/path/SKILL.md`. There is no hardcoded v000 default.
+`compile-ledger` builds a validated Reflection-derived episode, and `export-history`
+exports all committed episodes for `build-evidence --history`. The registry supports
+an explicit supplied Skill update or `activate-skill ... --after-round 2 --no-change`;
+it does not yet call a SkillOptimizer model.
+
+Three revised real-evidence smoke cases cover an actionable phone family,
+easy-regression protection, and rejection of high-count homophonic orthographic lures.
+Those historical cases test the Agent boundary, not production-scale policy quality: all are Round 1 with
+6 texts/24 copies rather than the formal 60/480, and do not exercise intervention
+history or skill updates. A validated proposal can be materialized into deterministic
 private Speech Generator assignments after four-layer train/dev/test content-isolation
-checks. The remaining integration work is to wrap those components into complete
-`EvidencePack` and training manifests, connect the fixed ASR train/eval commands, and run
-one fake-backend end-to-end round. No GPU closed-loop experiment should start before that
-integration test passes and the draft budgets are frozen.
+checks.
+
+A counterfactual interface smoke has exercised the strict Reflection schema with
+`gpt-5.6-sol` at `xhigh`; it proves only that the interface and validation boundary are
+executable, not that an intervention is effective. The current deterministic tests
+also exercise a source-bound fixture round through ledger commit, immediate Reflection
+feedback to the next proposal input, and immutable Skill activation. The new Agent
+smoke targets these extended interfaces; counterfactual histories are explicitly marked
+and cannot advance a real execution run. No formal GPU closed-loop training has been
+started for this framework. The independent Skill Optimizer follows only after at
+least two complete real intervention ledgers, and draft budgets still require freezing
+before a formal run.

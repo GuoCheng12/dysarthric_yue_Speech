@@ -3,7 +3,10 @@
 ## Runtime path
 
 - `qwen3_asr_lora_sft.py`: ordinary Qwen3-ASR LoRA training, fixed seed, correct
-  gradient accumulation, and optional continuation from the previous adapter.
+  utterance-mean gradient accumulation (including incomplete windows), explicit
+  right-padded training labels, and optional continuation from the previous adapter.
+- `train_setting_d_m0.py`: real-only 8x4 M0 training from the base model, decoded
+  dev monitoring every 10 steps, dev-only selection, and one final test decode.
 - `evaluate_asr_checkpoint.py`: one strict JSONL decoder for base Qwen3-ASR and LoRA;
   emits canonical overall/difficulty/patient metrics and refuses partial batches.
 - `project_registry.py`: verify frozen split rows/hashes and selected model artifacts.

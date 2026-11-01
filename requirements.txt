@@ -10,7 +10,7 @@ qwen-asr
 opencc-python-reimplemented
 pandas
 peft
-pycantonese
+pycantonese==5.0.0
 pydantic>=2.12,<3
 PyYAML>=6,<7
 openai>=2.46,<3

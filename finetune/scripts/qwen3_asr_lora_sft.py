@@ -9,9 +9,12 @@ import argparse
 import json
 import os
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 import torch
+import torch.nn.functional as F
+import accelerate.utils.other as accelerate_other
 from datasets import load_dataset
 from qwen_asr import Qwen3ASRModel
 from transformers import GenerationConfig, TrainingArguments, set_seed
@@ -41,7 +44,7 @@ except ImportError as exc:  # pragma: no cover
 DEFAULT_TARGET_MODULES = "q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj"
 
 
-def parse_args():
+def parse_args(argv=None):
     p = argparse.ArgumentParser("Qwen3-ASR LoRA SFT")
 
     p.add_argument("--model_path", type=str, default="Qwen/Qwen3-ASR-1.7B")
@@ -91,7 +94,15 @@ def parse_args():
     )
     p.add_argument("--dry_run_model_setup", type=int, default=0)
 
-    return p.parse_args()
+    args = p.parse_args(argv)
+    if args.lora_init_adapter_path.strip() and (
+        args.resume_from.strip() or args.resume == 1
+    ):
+        p.error(
+            "--lora_init_adapter_path loads weights only and cannot be combined "
+            "with --resume_from or --resume=1"
+        )
+    return args
 
 
 def parse_target_modules(value: str):
@@ -134,6 +145,14 @@ def write_lora_metadata(path: Path, args, target_modules, matched_modules, model
             trainable += n
     metadata = {
         "method": "LoRA",
+        "training_arguments": vars(args),
+        "runtime_versions": {
+            "python": sys.version,
+            **{
+                name: version(name)
+                for name in ("torch", "transformers", "peft", "datasets", "qwen-asr")
+            },
+        },
         "base_model": args.model_path,
         "train_file": args.train_file,
         "eval_file": args.eval_file,
@@ -159,17 +178,34 @@ def write_lora_metadata(path: Path, args, target_modules, matched_modules, model
 class QwenASRLoRATrainer(CastFloatInputsTrainer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Qwen3-ASR exposes ``**kwargs`` in forward, so Trainer otherwise assumes
-        # that the model consumes ``num_items_in_batch`` and skips its gradient-
-        # accumulation normalization. The current Qwen loss does not forward
-        # that value to ``loss_function``; it returns an ordinary mean CE loss.
-        self.model_accepts_loss_kwargs = False
-        assert self.model_accepts_loss_kwargs is False
+        # compute_loss explicitly normalizes by utterances in the entire
+        # accumulation window. Trainer must not divide it a second time.
+        self.model_accepts_loss_kwargs = True
         print(
-            "[loss-normalization] mode=trainer_gradient_accumulation_mean "
-            "model_accepts_loss_kwargs=False",
+            "[loss-normalization] mode=utterance_mean_accumulation_window "
+            "normalizer=utterances_not_tokens",
             flush=True,
         )
+
+    def _get_num_items_in_batch(self, batch_samples, device):
+        return sum(batch["labels"].shape[0] for batch in batch_samples)
+
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        labels = inputs["labels"]
+        outputs = model(**{key: value for key, value in inputs.items() if key != "labels"})
+        logits = outputs["logits"]
+        targets = labels[:, 1:].contiguous()
+        token_loss = F.cross_entropy(
+            logits[:, :-1].float().reshape(-1, logits.shape[-1]),
+            targets.reshape(-1), ignore_index=-100, reduction="none",
+        ).view_as(targets)
+        counts = targets.ne(-100).sum(dim=1)
+        if torch.any(counts == 0):
+            raise ValueError("every utterance requires at least one supervised token")
+        utterance_loss = token_loss.sum(dim=1) / counts
+        denominator = labels.shape[0] if num_items_in_batch is None else num_items_in_batch
+        loss = utterance_loss.sum() / denominator
+        return (loss, outputs) if return_outputs else loss
 
 
 def main():
@@ -181,6 +217,9 @@ def main():
     set_seed(args.seed)
     if int(os.environ.get("WORLD_SIZE", "1")) != 1:
         raise RuntimeError("the maintained LoRA path requires WORLD_SIZE=1")
+    # This entrypoint is explicitly non-DeepSpeed; do not import/probe the
+    # optional installation, which requires a toolkit absent on this host.
+    accelerate_other.is_deepspeed_available = lambda: False
 
     use_bf16 = torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 8
     asr_wrapper = Qwen3ASRModel.from_pretrained(

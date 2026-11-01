@@ -14,7 +14,7 @@ selection.
 | method | test overall CER | easy | medium | hard |
 |---|---:|---:|---:|---:|
 | zero-shot | 24.39% | 5.60% | 28.89% | 69.59% |
-| real-only LoRA, step 40 | 24.93% | 8.39% | 29.68% | 63.44% |
+| real-only LoRA, fixed-gradacc step 50 | 24.59% | 8.04% | 29.95% | 62.16% |
 | real + Speech Generator 1440, step 60 | 25.21% | 8.16% | 30.21% | 64.73% |
 
 Static augmentation therefore did not beat real-only on this formal run. More synthetic

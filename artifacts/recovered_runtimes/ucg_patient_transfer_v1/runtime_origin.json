@@ -1,0 +1,40 @@
+{
+  "source": "/data/qwen3-asr/records/therapist_mas_setting_d_v1/ucg_uniform_vs_v8_seed42_590_4gpu_20260913_v2/runtime",
+  "changes": {
+    "tests/test_ucg_material_context.py": {
+      "before": null,
+      "after": "14221510df15aa1bcb0f60eb7a34eb99f668fb80b761aa7e8aa14c0664be0444"
+    },
+    "examples/run_setting_e_sampling_curriculum_20260911.py": {
+      "before": "ca71eb6bd0a9aba0bc71046134ae9d85f25494f1cec1c4a0cfec365f2f82ed40",
+      "after": "4cbdeb9241a45a58ca8b0caa742a6f4653a156881099a10253bbd7de1455a0cc"
+    },
+    "src/therapist_harness/material_sampling_mas.py": {
+      "before": "0c0fbd0af654668e29c4120340f86f5a20d030128e0ce9312ded4002c861b13e",
+      "after": "cf0bbd79d4077fe6485beb53fcedea629ad7b41be149ff4ad4113ddbbe5252ad"
+    },
+    "src/therapist_harness/ucg_material_context.py": {
+      "before": null,
+      "after": "74095d870563adcf0be08e8fa3d712754ceab6b55d630e26053abd42adaf7195"
+    },
+    "src/therapist_harness/prompts/material_selection_offline.md": {
+      "before": "f911f59105718c337ad7160c795cabc988cf78de1086202c9e52a3073372beca",
+      "after": "0ea556ed5de0bf002b694a3f4acc56e3a43c8e8f59a777ff5c302c6e25d73b5d"
+    }
+  },
+  "unchanged_protocol_fields": [
+    "setting",
+    "seed",
+    "base_model",
+    "initial_adapter",
+    "global_batch",
+    "training",
+    "steps_per_stage",
+    "stages",
+    "total_optimizer_steps_limit",
+    "input_sha256",
+    "material_curriculum",
+    "agent"
+  ],
+  "main_change": "Material-only prompt and added dev-derived candidate context; candidate set/order unchanged"
+}

@@ -75,3 +75,11 @@ Strong success criteria let Codex loop independently. Weak criteria require clar
 - Do not modify files outside the current task target.
 - Do not reset, checkout, delete, or overwrite user or externally generated uncommitted changes.
 - If the worktree is dirty in files related to the task, understand and adapt to the existing changes; ask only when safe progress is not possible.
+
+## Do great is good. It's not necessary to strive for perfection.
+
+1. I don't like your "defensive" approach to anything, such as writing a lot of fallbacks in the code (which may never be triggered), or focusing on a small point that is logically unnecessary for us to pay attention to (it might appear, but we'll deal with it when it does). I also need you to clearly understand that this is a paper submitted to a conference. 
+2. The narrative and the final results/experiments should be considered separately and independently, rather than letting the fact that our current experimental results are not as good as you think lead to the entire subsequent development of our project being nothing more than patching, and the paper being written in a very defensive manner.
+
+## Execution method
+When users request to start new work or fix existing issues, continue until the user's goal is achieved, and proactively escalate the process upwards in terms of the goal. - Before asking users questions, complete tasks that are authorized both internally and externally and that can translate into auditable results for the next step. User approval should be for specific and verifiable results. - If user suggestions are unsuitable for the goal, say so directly; do not pander. - Do not proactively add warnings, disclaimers, approval processes, or security/compliance checklists based on hypothetical risks.

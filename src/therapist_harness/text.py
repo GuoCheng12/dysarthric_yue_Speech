@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 
 from opencc import OpenCC
 
@@ -42,6 +43,33 @@ YUE_REPLACEMENTS = (
     ("啱啱", "啱"),
     ("的", "嘅"),
 )
+
+
+@dataclass(frozen=True)
+class CerNormalizationProjection:
+    """Conservative index provenance for project CER normalization.
+
+    ``surface`` removes only whitespace and punctuation, so its characters are
+    still the ones whose Cantonese readings may be inspected. ``normalized`` is
+    the exact project CER string.  A surface index maps to a normalized index
+    only when that diagonal correspondence occurs in every minimum-edit
+    alignment between the two strings.  Ambiguous and length-changing regions
+    deliberately map to ``None`` rather than guessing provenance.
+    """
+
+    surface: str
+    normalized: str
+    surface_to_normalized: tuple[int | None, ...]
+
+    @property
+    def normalized_to_surface(self) -> tuple[int | None, ...]:
+        """Invert only forced one-to-one links; never invent a spoken carrier."""
+
+        inverse: list[int | None] = [None] * len(self.normalized)
+        for surface_index, normalized_index in enumerate(self.surface_to_normalized):
+            if normalized_index is not None:
+                inverse[normalized_index] = surface_index
+        return tuple(inverse)
 
 
 def parse_chinese_number(text: str) -> int | None:
@@ -106,6 +134,103 @@ def text_normalize(text: str) -> str:
     return normalized.lower()
 
 
+def tts_phonology_text(text: str) -> str:
+    """Return the characters whose pronunciation will be checked before TTS.
+
+    This deliberately does *not* reuse :func:`text_normalize`.  The CER
+    normalizer contains equivalence rewrites such as ``冇 -> 無`` and number
+    canonicalization; those rewrites are useful for scoring transcripts but can
+    change the Cantonese phones that CosyVoice will actually receive.  Only
+    whitespace and punctuation, which do not supply a segmental carrier, are
+    removed here.  Stimulus policy separately requires Traditional Chinese.
+    """
+
+    if not isinstance(text, str):
+        raise TypeError("tts_phonology_text requires a string")
+    cleaned = re.sub(r"\s+", "", text)
+    return cleaned.translate(str.maketrans("", "", PUNCTUATION)).lower()
+
+
+def _forced_diagonal_projection(source: str, target: str) -> tuple[int | None, ...]:
+    """Map source indices through diagonal edges shared by all optima."""
+
+    n = len(source)
+    m = len(target)
+    costs = [[0] * (m + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        costs[i][0] = i
+    for j in range(1, m + 1):
+        costs[0][j] = j
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            costs[i][j] = min(
+                costs[i - 1][j - 1] + (source[i - 1] != target[j - 1]),
+                costs[i - 1][j] + 1,
+                costs[i][j - 1] + 1,
+            )
+
+    forward = [[0] * (m + 1) for _ in range(n + 1)]
+    forward[0][0] = 1
+    for i in range(n + 1):
+        for j in range(m + 1):
+            if i == 0 and j == 0:
+                continue
+            if (
+                i
+                and j
+                and costs[i - 1][j - 1] + (source[i - 1] != target[j - 1])
+                == costs[i][j]
+            ):
+                forward[i][j] += forward[i - 1][j - 1]
+            if i and costs[i - 1][j] + 1 == costs[i][j]:
+                forward[i][j] += forward[i - 1][j]
+            if j and costs[i][j - 1] + 1 == costs[i][j]:
+                forward[i][j] += forward[i][j - 1]
+
+    backward = [[0] * (m + 1) for _ in range(n + 1)]
+    backward[n][m] = 1
+    for i in range(n, -1, -1):
+        for j in range(m, -1, -1):
+            if i == n and j == m:
+                continue
+            if (
+                i < n
+                and j < m
+                and costs[i][j] + (source[i] != target[j]) == costs[i + 1][j + 1]
+            ):
+                backward[i][j] += backward[i + 1][j + 1]
+            if i < n and costs[i][j] + 1 == costs[i + 1][j]:
+                backward[i][j] += backward[i + 1][j]
+            if j < m and costs[i][j] + 1 == costs[i][j + 1]:
+                backward[i][j] += backward[i][j + 1]
+
+    optimal_path_count = forward[n][m]
+    projection: list[int | None] = [None] * n
+    for i in range(n):
+        for j in range(m):
+            if (
+                costs[i][j] + (source[i] != target[j]) == costs[i + 1][j + 1]
+                and forward[i][j] * backward[i + 1][j + 1] == optimal_path_count
+            ):
+                projection[i] = j
+                break
+    return tuple(projection)
+
+
+def cer_normalization_projection(text: str) -> CerNormalizationProjection:
+    """Return a conservative bridge from spoken surface to CER identity."""
+
+    if not isinstance(text, str):
+        raise TypeError("cer_normalization_projection requires a string")
+    surface = tts_phonology_text(text)
+    normalized = text_normalize(text)
+    return CerNormalizationProjection(
+        surface=surface,
+        normalized=normalized,
+        surface_to_normalized=_forced_diagonal_projection(surface, normalized),
+    )
+
+
 def edit_distance(reference: str, hypothesis: str) -> int:
     """Return character-level Levenshtein distance."""
 
@@ -124,7 +249,7 @@ def edit_distance(reference: str, hypothesis: str) -> int:
     return previous[-1]
 
 
-def _phonological_keys(normalized: str, *, source_label: str) -> tuple[str, str]:
+def _phonological_keys(surface: str, *, source_label: str) -> tuple[str, str]:
     try:
         import pycantonese
     except ImportError as error:  # pragma: no cover - dependency is in requirements.txt
@@ -133,7 +258,7 @@ def _phonological_keys(normalized: str, *, source_label: str) -> tuple[str, str]
         ) from error
 
     try:
-        pieces = pycantonese.characters_to_jyutping(normalized)
+        pieces = pycantonese.characters_to_jyutping(surface)
     except Exception as error:
         raise RuntimeError(f"PyCantonese failed for {source_label}") from error
 
@@ -175,7 +300,12 @@ def _phonological_keys(normalized: str, *, source_label: str) -> tuple[str, str]
 
 
 def identity_keys(text: str, *, source_label: str = "text") -> dict[str, str]:
-    """Return all four exact-match identities used for content isolation."""
+    """Return scoring and spoken-content identities for content isolation.
+
+    The CER key retains the project's transcript equivalences. Jyutping keys
+    instead describe the words actually spoken, before those equivalences can
+    change a syllable (for example, ``咩/me1 -> 乜/mat1``).
+    """
 
     if not isinstance(text, str) or not text.strip():
         raise ValueError(f"{source_label} must be non-empty text")
@@ -184,7 +314,7 @@ def identity_keys(text: str, *, source_label: str = "text") -> dict[str, str]:
     if not normalized:
         raise ValueError(f"{source_label} is empty after project text_normalize")
     jyutping, detoned_jyutping = _phonological_keys(
-        normalized, source_label=source_label
+        tts_phonology_text(text), source_label=source_label
     )
     return {
         "raw_clean": raw_clean,
@@ -195,8 +325,11 @@ def identity_keys(text: str, *, source_label: str = "text") -> dict[str, str]:
 
 
 __all__ = [
+    "CerNormalizationProjection",
+    "cer_normalization_projection",
     "edit_distance",
     "identity_keys",
     "parse_chinese_number",
     "text_normalize",
+    "tts_phonology_text",
 ]

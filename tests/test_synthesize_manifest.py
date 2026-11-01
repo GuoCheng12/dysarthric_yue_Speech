@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 import pytest
@@ -11,7 +12,22 @@ from synthesis.cosyvoice3_patient_sft.synthesize_manifest import (
     load_frozen_manifest,
     materialize_manifest,
     sha256_file,
+    source_tree_sha256,
 )
+
+
+def test_source_hash_includes_tracked_symlink_content(tmp_path: Path) -> None:
+    target = tmp_path / "a.txt"
+    target.write_text("original", encoding="utf-8")
+    (tmp_path / "b.txt").symlink_to("a.txt")
+    expected = hashlib.sha256()
+    for name in ("a.txt", "b.txt"):
+        expected.update(name.encode() + b"\0")
+        expected.update(sha256_file(target).encode() + b"\n")
+    original, count = source_tree_sha256(tmp_path)
+    assert (original, count) == (expected.hexdigest(), 2)
+    target.write_text("changed", encoding="utf-8")
+    assert source_tree_sha256(tmp_path)[0] != original
 
 
 class MockSpeechGenerator:
@@ -129,7 +145,9 @@ def test_each_row_makes_exactly_one_fixed_inference_call(tmp_path: Path) -> None
     )
 
 
-def test_failed_batch_publishes_no_partial_outputs(tmp_path: Path) -> None:
+def test_failed_batch_retains_completed_outputs_without_success_summary(
+    tmp_path: Path,
+) -> None:
     reference = tmp_path / "reference.wav"
     reference.write_bytes(b"fixed reference bytes")
     manifest = tmp_path / "manifest.jsonl"
@@ -155,4 +173,5 @@ def test_failed_batch_publishes_no_partial_outputs(tmp_path: Path) -> None:
         )
 
     assert not summary_path.exists()
-    assert all(not Path(item["output_wav"]).exists() for item in rows)
+    assert Path(rows[0]["output_wav"]).is_file()
+    assert not Path(rows[1]["output_wav"]).exists()

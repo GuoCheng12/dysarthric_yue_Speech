@@ -14,7 +14,7 @@ base_models:
     fingerprint_sha256: f994739fe38e5210b9e3e8ce6c6307315e2ceac3cb630e7b7414d69dce520f60
 
 artifacts:
-  - id: setting_d.real_only.step40
+  - id: setting_d.real_only.gradacc_fixed.step50
     display_name: Setting D real-only LoRA
     setting_id: setting_d
     role: primary_real_only_baseline
@@ -29,14 +29,14 @@ artifacts:
       checkpoint_rule: minimum dev mean-utterance CER among 10-step snapshots
       seeds: [42]
     checkpoints:
-      - step: 40
-        path: /data/qwen3-asr/finetune/setting_d_v1/lora_current_default_r16_scale025_step140_seed42_v1/step_checkpoints/checkpoint-40
+      - step: 50
+        path: /data/qwen3-asr/finetune/setting_d_gradacc_fixed_v1/lora_current_default_r16_scale025_step140_seed42_v1/step_checkpoints/checkpoint-50
     evaluation:
       split: setting_d_test
       sample_count: 253
       hard_sample_count: 47
-      overall_cer: 0.249286
-      hard_cer: 0.634448
+      overall_cer: 0.245895
+      hard_cer: 0.621647
       critical_error: 46
       hard_critical_error: null
       patient_macro_cer: null

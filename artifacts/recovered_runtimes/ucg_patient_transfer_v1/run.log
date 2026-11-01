@@ -1,0 +1,18 @@
+{"utc": "2026-09-14T09:29:43Z", "stage": "running", "mode": "prepare", "phase": "smoke", "branch": "mas", "gpus": [0, 1, 2, 3]}
+{"utc": "2026-09-14T09:29:44.796101+00:00", "stage": "prepared", "branch": "mas", "train_audio": 2117, "feedback_audio": 258, "test_audio": 253, "stages": 21, "steps_per_stage": 29}
+{"utc": "2026-09-14T09:29:44Z", "stage": "running", "mode": "cpu-smoke", "phase": "smoke", "branch": "mas", "gpus": [0, 1, 2, 3]}
+{"passed": true, "scope": "CPU: split identity, sampler coverage, weighted draws, exact sampler continuation and step budget", "stage_lengths": [29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 10], "optimizer_steps": 590, "actual_exposure_budget": 18880, "gpu_training_checked": false, "train_audio": 2117, "feedback_audio": 258, "test_audio": 253}
+{"utc": "2026-09-14T09:29:45Z", "stage": "running", "mode": "prepare", "phase": "formal", "branch": "mas", "gpus": [0, 1, 2, 3]}
+{"utc": "2026-09-14T09:29:46.436280+00:00", "stage": "prepared", "branch": "mas", "train_audio": 2117, "feedback_audio": 258, "test_audio": 253, "stages": 21, "steps_per_stage": 29}
+{"utc": "2026-09-14T09:29:46Z", "stage": "running", "mode": "cpu-smoke", "phase": "formal", "branch": "mas", "gpus": [0, 1, 2, 3]}
+{"passed": true, "scope": "CPU: split identity, sampler coverage, weighted draws, exact sampler continuation and step budget", "stage_lengths": [29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 10], "optimizer_steps": 590, "actual_exposure_budget": 18880, "gpu_training_checked": false, "train_audio": 2117, "feedback_audio": 258, "test_audio": 253}
+{"utc": "2026-09-14T09:29:47Z", "stage": "running", "mode": "smoke", "phase": "smoke", "branch": "mas", "gpus": [0, 1, 2, 3]}
+{"utc": "2026-09-14T09:29:47.750068+00:00", "stage": "process_started", "rank": 0, "gpu": "0", "pid": 309110}
+{"utc": "2026-09-14T09:29:47.752208+00:00", "stage": "process_started", "rank": 1, "gpu": "1", "pid": 309111}
+{"utc": "2026-09-14T09:29:47.754245+00:00", "stage": "process_started", "rank": 2, "gpu": "2", "pid": 309112}
+{"utc": "2026-09-14T09:29:47.756543+00:00", "stage": "process_started", "rank": 3, "gpu": "3", "pid": 309113}
+{"utc": "2026-09-14T09:52:16Z", "stage": "running", "mode": "supervise", "phase": "formal", "branch": "mas", "gpus": [0, 1, 2, 3]}
+{"utc": "2026-09-14T09:52:16.694338+00:00", "stage": "process_started", "rank": 0, "gpu": "0", "pid": 331440}
+{"utc": "2026-09-14T09:52:16.696813+00:00", "stage": "process_started", "rank": 1, "gpu": "1", "pid": 331441}
+{"utc": "2026-09-14T09:52:16.699188+00:00", "stage": "process_started", "rank": 2, "gpu": "2", "pid": 331442}
+{"utc": "2026-09-14T09:52:16.701712+00:00", "stage": "process_started", "rank": 3, "gpu": "3", "pid": 331443}

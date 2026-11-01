@@ -1,0 +1,67 @@
+{
+  "status": "ready_concurrent_smoke_passed",
+  "full_evaluation_started": false,
+  "preparation_root": "/data/qwen3-asr/records/cantoprobe_zero_shot_preparation_20260912_v1",
+  "inference_script": "/data/qwen3-asr/repo/dysarthric_yue_Speech/examples/transcribe_cantoprobe_zero_shot.py",
+  "models": [
+    {
+      "name": "whisper",
+      "repo": "openai/whisper-large-v3",
+      "path": "/data/qwen3-asr/models/whisper-large-v3",
+      "revision": "06f233fe06e710322aca913c1bc4249a0d71fce1",
+      "python": "/data/qwen3-asr/venvs/qwen3-asr/bin/python",
+      "recommended_gpu": 0,
+      "actual_parameters": 1543490560,
+      "driver_peak_MiB_smoke": 4448.0,
+      "dtype": "torch.float16",
+      "decoding": {
+        "language": "cantonese",
+        "task": "transcribe",
+        "do_sample": false,
+        "num_beams": 1,
+        "max_new_tokens": 256,
+        "condition_on_prev_tokens": false
+      }
+    },
+    {
+      "name": "sensevoice",
+      "repo": "FunAudioLLM/SenseVoiceSmall",
+      "path": "/data/qwen3-asr/models/SenseVoiceSmall",
+      "revision": "3847d57b6bdf2dd8875cb1508d2af43d80a16bf7",
+      "python": "/data/qwen3-asr/venvs/cantoprobe-sensevoice/bin/python",
+      "recommended_gpu": 1,
+      "actual_parameters": 233999167,
+      "driver_peak_MiB_smoke": 1356.0,
+      "dtype": "torch.float32",
+      "decoding": {
+        "language": "yue",
+        "use_itn": false,
+        "batch_size": 1
+      }
+    },
+    {
+      "name": "glm",
+      "repo": "zai-org/GLM-ASR-Nano-2512",
+      "path": "/data/qwen3-asr/models/GLM-ASR-Nano-2512",
+      "revision": "61ba4e0b3309b6656edea3e93e419f7bd5c61957",
+      "python": "/data/qwen3-asr/venvs/cantoprobe-glm-asr/bin/python",
+      "recommended_gpu": 2,
+      "actual_parameters": 2257843200,
+      "driver_peak_MiB_smoke": 4904.0,
+      "dtype": "torch.bfloat16",
+      "decoding": {
+        "do_sample": false,
+        "num_beams": 1,
+        "max_new_tokens": 256
+      }
+    }
+  ],
+  "spare_gpu": 3,
+  "same_six_audio_ids_and_hashes": true,
+  "smoke_manifest": "/data/qwen3-asr/records/cantoprobe_zero_shot_preparation_20260912_v1/smoke_audio.jsonl",
+  "smoke_receipt": "/data/qwen3-asr/records/cantoprobe_zero_shot_preparation_20260912_v1/concurrent_smoke_v1/complete.json",
+  "model_hashes": "/data/qwen3-asr/records/cantoprobe_zero_shot_preparation_20260912_v1/model_files_verified.json",
+  "disk_free_bytes": 25501368320,
+  "full_evaluation_manifest": null,
+  "preparation_note": "Ready means all models loaded and inferred offline together. Model repetition or generation-cap events remain in outputs and are not excluded."
+}

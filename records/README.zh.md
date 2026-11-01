@@ -1,5 +1,13 @@
 # 当前实验记录
 
+当前已保留的正向版本为 **Setting E 纯真实数据 MAS 采样课程，seed42 / 590 steps**。
+相同更新预算下，test 总 CER 为普通采样 15.7368%、MAS 15.4813%。
+方法、Agent 决策与曝光总结见 `docs/setting_e_mas_success_preserved_v1_20260911.zh.md`；
+保留登记见 `artifacts/registry/setting_e_mas_sampling_preserved_v1.json`。
+外部独立保留包为
+`/data/qwen3-asr/records/therapist_mas_setting_e_v1/preserved_methods/real_sampling_mas_seed42_590_v1`。
+后续清理请保留该包及其列出的依赖。以下 Setting D 主线结论为历史记录。
+
 ## 主线结论
 
 当前正式数据是 Setting D：`2117 / 258 / 253`，train/dev/test content 为
@@ -9,7 +17,7 @@
 | 方法 | test overall CER | easy | medium | hard |
 |---|---:|---:|---:|---:|
 | Qwen3-ASR zero-shot | **24.39%** | **5.60%** | **28.89%** | 69.59% |
-| Real-only LoRA | 24.93% | 8.39% | 29.68% | **63.44%** |
+| Real-only LoRA | 24.59% | 8.04% | 29.95% | **62.16%** |
 | Real + static Speech Generator 1440 | 25.21% | 8.16% | 30.21% | 64.73% |
 
 真实数据微调和静态增强都呈现“hard 改善、easy/medium 退化”。因此当前问题不是

@@ -1,0 +1,29 @@
+{
+  "status": "smoke_passed_full_test_running",
+  "model": "FunAudioLLM/Fun-ASR-Nano-2512",
+  "revision": "272c57b82523ada6fd87095e955f8e29100979ab",
+  "actual_parameters": 829791840,
+  "model_path": "/data/qwen3-asr/models/Fun-ASR-Nano-2512",
+  "python": "/data/qwen3-asr/venvs/cantoprobe-sensevoice/bin/python",
+  "gpu": 3,
+  "run_root": "/data/qwen3-asr/records/cantoprobe_fun_asr_nano_20260912_v2",
+  "tmux": "cantoprobe-zero-shot",
+  "data": "Setting E / same 372 test audio as Qwen, Whisper, SenseVoice and GLM",
+  "protocol": "/data/qwen3-asr/records/cantoprobe_fun_asr_nano_20260912_v2/protocol.json",
+  "source_reuse": "/data/qwen3-asr/records/cantoprobe_fun_asr_nano_20260912_v2/source_reuse.json",
+  "smoke": "/data/qwen3-asr/records/cantoprobe_fun_asr_nano_20260912_v2/smoke/complete.json",
+  "result": "/data/qwen3-asr/records/cantoprobe_fun_asr_nano_20260912_v2/comparison_with_funnano.json",
+  "decoding": {
+    "language": null,
+    "itn": false,
+    "hotwords": [],
+    "batch_size": 1,
+    "max_length": 256,
+    "llm_kwargs": {
+      "do_sample": false,
+      "num_beams": 1
+    }
+  },
+  "transcription_instruction": "语音转写，不进行文本规整：",
+  "checkpoint_note": "Official checkpoint lacks the optional CTC timestamp head. Installed official FunASR code disables that uninitialized head; text-transcription weights load successfully."
+}

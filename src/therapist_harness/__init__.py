@@ -3,19 +3,25 @@
 from .schema import (
     EvidencePack,
     Proposal,
-    Reflection,
-    RoundResult,
     RunProtocol,
-    SkillPatch,
     validate_proposal,
+)
+from .round_schema import (
+    EvaluationPlan,
+    MaterializationSidecar,
+    ReflectionPack,
+    ReflectionV2,
+    RoundResultV2,
 )
 
 __all__ = [
     "EvidencePack",
+    "EvaluationPlan",
+    "MaterializationSidecar",
     "Proposal",
-    "Reflection",
-    "RoundResult",
+    "ReflectionPack",
+    "ReflectionV2",
+    "RoundResultV2",
     "RunProtocol",
-    "SkillPatch",
     "validate_proposal",
 ]

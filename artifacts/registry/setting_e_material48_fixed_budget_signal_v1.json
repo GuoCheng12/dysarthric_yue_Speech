@@ -1,0 +1,39 @@
+{
+  "acceptance_passed": false,
+  "artifact_id": "setting_e_material48_fixed_budget_signal_v1",
+  "dev_selected_step": 493,
+  "dev_selected_test_CER_percent": 15.587734241908008,
+  "endpoint_test_CER_percent": 15.374787052810904,
+  "experiment_root": "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4",
+  "interpretation": "Fixed step590 improves both retained MAS and fresh ordinary pooled CER; final dev-selected checkpoint does not improve retained MAS. Do not relabel as full acceptance.",
+  "retain": true,
+  "retained_checkpoints": [
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-021/checkpoint",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-017/checkpoint"
+  ],
+  "retained_source_paths": [
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_v1",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/runtime_versions/material_evidence_ids_v4",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_selection_offline_20260911_v1"
+  ],
+  "source_sha256": {
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/analysis/elapsed_budget_final.json": "22e72e390a0a89d71f16ac78d2e3d29314058a221adf329d65c501f29bccf39b",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/analysis/final_exposure_audit.json": "eeb4ed85ca421af9fda29e23b5236d7bfa7a706b5e392a68e7265fc8308200f7",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/analysis/fixed_focus_control_through_round021.json": "0b3d5df2a953dcdf2e7af71c15e324efc4edf569a1bc1781a2c39bfa311e4631",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/final_comparison.json": "891aa892836a78f4e06f57a9d2779f105dc3029c997bc8935608dd20d6ad2364",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-017/checkpoint/README.md": "5a1017b5888a763f180c73ddaadabb69a51e1fadaf74f2405fdbcb81eadc9491",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-017/checkpoint/adapter_config.json": "24899dd77ccc480e34141cfef83f7cbc30e2225edf6aa28d887b6ceb2e097953",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-017/checkpoint/adapter_model.safetensors": "5d1dc2c35fc4e9c3d3c788ff3423ffcb0bf292692da7f37ad08647f245c9b14c",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-017/checkpoint/context.json": "bfbbc0df29f8354b7e4c17cdaac3ab03a836ef65a47b3014d69484f9f3ebf278",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-017/checkpoint/provenance.json": "a77224325a146e4a303b16a11bc9aaeb023db2aa1a5cbabcad519025d6ac5cd4",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-017/checkpoint/training_state.pt": "b0d4c4bb14304244db151a9ae2ba5992c0895e4b5b56d5d06d664dcbf6e7cf7a",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-021/checkpoint/README.md": "5a1017b5888a763f180c73ddaadabb69a51e1fadaf74f2405fdbcb81eadc9491",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-021/checkpoint/adapter_config.json": "24899dd77ccc480e34141cfef83f7cbc30e2225edf6aa28d887b6ceb2e097953",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-021/checkpoint/adapter_model.safetensors": "1b9d2de3f51b16a3857befb1b62934db6f5610237e831a1158920a435b752e7c",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-021/checkpoint/context.json": "5567c2b6c72cf5d9b6f9d5ab474dfa5e7a64cadb3885c0dd755154fb5a6b759c",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-021/checkpoint/provenance.json": "23349683e28209f41c93da075cd311bb33198ec836948b5d186f4dfbdb6923fb",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/mas/stage-021/checkpoint/training_state.pt": "113452559119fcffd4afa36ecbce0ac88f7d9b4d5c838aeb5f6b3c321983a543",
+    "/data/qwen3-asr/records/therapist_mas_setting_e_v1/material_curriculum_exploration_20260911_candidate48_recovery_v4/formal/protocol.json": "c3a2193dd458e35f1ea7f3176997d04a11f6a4587a8962ceb3b7fede0d922fbe"
+  },
+  "status": "positive_fixed_590_budget_result_full_acceptance_failed"
+}

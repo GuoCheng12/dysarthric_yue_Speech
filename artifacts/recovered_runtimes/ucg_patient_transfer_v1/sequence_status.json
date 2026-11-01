@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-14T09:52:16Z",
+  "stage": "running",
+  "mode": "supervise",
+  "phase": "formal",
+  "branch": "mas",
+  "gpus": [
+    0,
+    1,
+    2,
+    3
+  ]
+}

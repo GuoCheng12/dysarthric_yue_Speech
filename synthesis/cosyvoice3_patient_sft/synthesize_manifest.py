@@ -135,8 +135,8 @@ def source_tree_sha256(root: Path, *, exclude_wav: bool = False) -> tuple[str, i
         and (not exclude_wav or path.suffix.lower() != ".wav")
     )
     for path in files:
-        if path.is_symlink():
-            raise ValueError(f"runtime source tree contains a symlink: {path}")
+        # CosyVoice tracks file symlinks; hash their resolved content just as
+        # when the pinned source digest was recorded.
         digest.update(path.relative_to(root).as_posix().encode("utf-8"))
         digest.update(b"\0")
         digest.update(sha256_file(path).encode("ascii"))
@@ -592,27 +592,43 @@ def materialize_manifest(
     *,
     runtime_factory: Callable[[], tuple[Any, dict[str, Any]]] = load_fixed_runtime,
 ) -> dict[str, Any]:
-    """Validate first, then synthesize once per row and publish one summary."""
+    """Publish each completed wav once; only a complete batch gets a summary.
+
+    A runtime failure stops the batch and preserves completed wavs alongside a
+    separate failure receipt. This is an audit trail, not automatic recovery or
+    permission to train on an incomplete batch.
+    """
 
     manifest = load_frozen_manifest(manifest_path)
     validate_summary_path(summary_path, manifest)
-    model, runtime = runtime_factory()
+    failure_path = summary_path.with_name(f"{summary_path.stem}.failure.json")
+    validate_summary_path(failure_path, manifest)
     started = time.time()
-    staged_audio: list[tuple[ManifestSample, dict[str, Any], Path]] = []
-    published: list[Path] = []
+    outputs: list[dict[str, Any]] = []
+    runtime: dict[str, Any] | None = None
+    failed_sample_id: str | None = None
+    stage = "runtime_load"
+    audio_temporary: Path | None = None
     summary_temporary: Path | None = None
     try:
+        model, runtime = runtime_factory()
+        stage = "synthesis"
         for index, sample in enumerate(manifest.samples, start=1):
+            failed_sample_id = sample.sample_id
             print(
                 f"[{index}/{len(manifest.samples)}] {sample.sample_id}",
                 flush=True,
             )
-            record, temporary = _stage_audio_once(sample, model)
-            staged_audio.append((sample, record, temporary))
+            record, audio_temporary = _stage_audio_once(sample, model)
+            os.link(audio_temporary, sample.output_wav)
+            outputs.append(record)
+            audio_temporary.unlink()
+            audio_temporary = None
+            failed_sample_id = None
 
+        stage = "finalization"
         if sha256_file(manifest.path) != manifest.sha256:
             raise RuntimeError("manifest changed during synthesis")
-        outputs = [record for _, record, _ in staged_audio]
         summary = {
             "schema_version": 1,
             "status": "complete",
@@ -627,18 +643,35 @@ def materialize_manifest(
             "elapsed_seconds": time.time() - started,
         }
         summary_temporary = _stage_json(summary_path, summary)
-        for sample, _, temporary in staged_audio:
-            os.link(temporary, sample.output_wav)
-            published.append(sample.output_wav)
         os.link(summary_temporary, summary_path)
         return summary
-    except Exception:
-        for path in published:
-            path.unlink(missing_ok=True)
+    except Exception as error:
+        failure = {
+            "schema_version": 1,
+            "status": "failed",
+            "manifest": {
+                "path": str(manifest.path),
+                "sha256": manifest.sha256,
+                "sample_count": len(manifest.samples),
+            },
+            "runtime": runtime,
+            "stage": stage,
+            "failed_sample_id": failed_sample_id,
+            "completed_sample_ids": [item["sample_id"] for item in outputs],
+            "output_count": len(outputs),
+            "outputs": outputs,
+            "error": {"type": type(error).__name__, "message": str(error)},
+            "elapsed_seconds": time.time() - started,
+        }
+        failure_temporary = _stage_json(failure_path, failure)
+        try:
+            os.link(failure_temporary, failure_path)
+        finally:
+            failure_temporary.unlink(missing_ok=True)
         raise
     finally:
-        for _, _, temporary in staged_audio:
-            temporary.unlink(missing_ok=True)
+        if audio_temporary is not None:
+            audio_temporary.unlink(missing_ok=True)
         if summary_temporary is not None:
             summary_temporary.unlink(missing_ok=True)
 

@@ -6,10 +6,25 @@ round_count: 4
 
 base_model_dir: /data/qwen3-asr/models/Qwen3-ASR-1.7B
 base_model_fingerprint:
-  path: /data/qwen3-asr/models/Qwen3-ASR-1.7B/model.safetensors.index.json
-  sha256: f994739fe38e5210b9e3e8ce6c6307315e2ceac3cb630e7b7414d69dce520f60
+  path: /data/qwen3-asr/models/Qwen3-ASR-1.7B
+  sha256: 01901caa7c806df96e7c7c0520bda09ddcc9a32dc0135ae7859dc1e96181e891
+  kind: directory
   expected_rows: null
-initial_adapter: null
+initial_adapter:
+  path: /data/qwen3-asr/finetune/setting_d_gradacc_fixed_v1/lora_current_default_r16_scale025_step140_seed42_v1/step_checkpoints/checkpoint-50
+  sha256: 42bf9bb4f725a815152e71d24e89d17eaf0c2bb2b5871e1f6fcc0e8689610ef5
+  kind: directory
+  expected_rows: null
+initial_adapter_dev_predictions:
+  path: /data/qwen3-asr/finetune/setting_d_gradacc_fixed_v1/lora_current_default_r16_scale025_step140_seed42_v1/evaluation/dev_step_50/predictions.csv
+  sha256: f96d607c957b6e2f11c8648491d7bea698bec400912d6f612a7a585f408be55a
+  expected_rows: 258
+initial_adapter_prediction_column: fine_tuned_pred
+zero_shot_dev_predictions:
+  path: /data/qwen3-asr/inference/outputs/setting_d_seen_patient_unseen_content_v1_qc_frozen/setting_d_dev.csv
+  sha256: b39a67f84ae05a13c706406c92425f77e6f622d46e027b6805adc60e6c7902d7
+  expected_rows: 258
+zero_shot_prediction_column: raw_pred
 
 real_train:
   path: /data/qwen3-asr/finetune/data_setting_d_v1/setting_d_train.jsonl
@@ -40,6 +55,8 @@ agent:
   reasoning_effort: xhigh
   store: false
   max_retries: 0
+  timeout_seconds: 900
+  max_output_tokens: 32768
   api_key_env: OPENAI_API_KEY
 
 # These three budgets are draft research choices. Freeze them before `init`.
@@ -49,10 +66,20 @@ real_replay_count_per_round: 2117
 speaker_profiles:
   all_patients_balanced:
     difficulty_groups: [easy, medium, hard]
-  hard_patients_balanced:
-    difficulty_groups: [hard]
-  easy_medium_protection:
-    difficulty_groups: [easy, medium]
+proposal_constraints:
+  # Agent v1 keeps CosyVoice reference allocation outside the Agent.
+  fixed_speaker_profile_id: all_patients_balanced
+  # Keep the first protocol causally interpretable: one intervention target/round.
+  max_primary_targets: 1
+  max_copies_per_stimulus: 16
+  max_surface_characters_per_stimulus: 24
+  # An exactly-threshold-supported target remains an exploratory intervention.
+  threshold_edge_max_linked_copies: 16
+  threshold_edge_max_unique_stimuli: 2
+  threshold_edge_max_carrier_exposures: 32
+  # Diagnostic-only clusters may inform assessment/risk, never TTS text.
+  non_targetable_cluster_stimuli_allowed: false
+  non_tts_actionable_cluster_stimuli_allowed: false
 
 lora:
   rank: 16
@@ -75,7 +102,10 @@ lora:
   training_passes_per_round: 1
   save_at_round_end: true
   scheduler: linear
+  initialization: parent_adapter_weights_only
+  reset_optimizer_each_round: true
   reset_scheduler_each_round: true
+  warmup_ratio: 0.02
   seed: 42
 
 evaluation:
@@ -91,4 +121,3 @@ evaluation:
 
 skill_update_rounds:
   - 2
-  - 4
